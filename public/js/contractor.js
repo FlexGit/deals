@@ -35,7 +35,6 @@ $(document).ready(function() {
 		var $list = $('.js-contractor-list');
 		if (!$list.length) return;
 
-		console.log(111);
 		$.ajax({
 			type: 'GET',
 			url: $list.data('action'),
@@ -45,7 +44,7 @@ $(document).ready(function() {
 			cache: false,
 			global: false,
 			success: function(D) {
-				console.log(D);
+				//console.log(D);
 				if (D.status !== 'success') {
 					toastr.error("", D.reason ? D.reason : 'Ошибка, попробуйте повторить операцию позже');
 					return;

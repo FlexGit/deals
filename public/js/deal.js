@@ -327,7 +327,7 @@ $(document).ready(function() {
 			cache: false,
 			global: false,
 			success: function(D) {
-				//console.log(D);
+				console.log(D);
 				if (D.status !== 'success') {
 					toastr.error("", D.reason ? D.reason : 'Ошибка, попробуйте повторить операцию позже');
 					return;
