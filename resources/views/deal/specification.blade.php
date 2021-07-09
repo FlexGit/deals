@@ -79,7 +79,7 @@
 						<td>{{ ($index + 1) }}</td>
 						<td>{{ $coin['name'] }}{{ $coin['country'] ? ', ' . $coin['country'] : '' }}{{ $coin['year'] ? ', ' . $coin['year'] : '' }}</td>
 						<td>{{ $coin['metal'] }}</td>
-						<td>{{ $coin['denomination'] }}</td>
+						<td class="text-nowrap">{{ $coin['denomination'] }}</td>
 						<td>{{ $coin['fineness'] }}</td>
 						<td>{{ $coin['coinage'] }}</td>
 						<td class="text-right text-nowrap">{{ number_format($coin['price'], 2, '.', ' ') }}</td>
