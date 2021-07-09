@@ -104,7 +104,7 @@ class CoinController extends Controller {
 		$rules = [
 			'coin-name' => 'required|max:255',
 			'coin-country' => 'nullable|max:255',
-			'coin-year' => 'nullable|digits:4',
+			'coin-year' => 'nullable|max:255',
 			'coin-metal' => 'nullable|max:255',
 			'coin-denomination' => 'nullable|max:255',
 			'coin-fineness' => 'nullable|max:255',
