@@ -66,7 +66,7 @@ $(document).ready(function() {
 				$coinContainer.find('.js-coin-id').val(suggestion.id);
 				$coinContainer.find('.js-coin-country').val(suggestion.data.country);
 				$coinContainer.find('.js-coin-year').val(suggestion.data.year);
-				$coinContainer.find('.js-coin-metal').val(suggestion.data.metall);
+				$coinContainer.find('.js-coin-metal').val(suggestion.data.metal);
 				$coinContainer.find('.js-coin-denomination').val(suggestion.data.denomination);
 				$coinContainer.find('.js-coin-fineness').val(suggestion.data.fineness);
 				$coinContainer.find('.js-coin-coinage').val(suggestion.data.coinage);
