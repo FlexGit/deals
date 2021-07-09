@@ -43,13 +43,13 @@ class DealController extends Controller {
 		}
 		
 		$contractorName = $this->request->get('contractor') ?: '';
-		Log::debug($contractorName);
+		
 		$contractorIds = [];
 		if ($contractorName) {
 			$contractorIds = Contractor::where('name', $contractorName)
 				->pluck('id')->all();
 		}
-		Log::debug($contractorIds);
+		
 		if ($contractorIds) {
 			$deals = Deal::whereIn('contractor_id', $contractorIds)
 				->orderBy('id', 'desc')
