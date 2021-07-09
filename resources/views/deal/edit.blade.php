@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <form id="deal-form" method="POST" action="{{ route('deal-save') }}" enctype="multipart/form-data">
+                <form id="deal-form" method="POST" class="js-deal-list" data-action="{{ route('deal-list') }}" action="{{ route('deal-save') }}" enctype="multipart/form-data">
                     @csrf
 
                     <input type="hidden" id="deal-id" name="deal-id" value="{{ $deal ? $deal->id : '' }}">
