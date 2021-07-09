@@ -318,15 +318,9 @@ $(document).ready(function() {
 	});
 
 	function getDealList(contractorName) {
-		//let mix = require('laravel-mix');
-		require('dotenv').config();
-		let url = process.env.APP_URL;
-
-		console.log(url);
-
 		$.ajax({
 			type: 'GET',
-			url: url + '/deal-list/',
+			url: $('.js-deal-list').data('action'),
 			data: { contractor: contractorName },
 			dataType: 'json',
 			async: true,
