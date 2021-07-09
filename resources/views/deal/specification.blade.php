@@ -82,9 +82,9 @@
 						<td>{{ $coin['denomination'] }}</td>
 						<td>{{ $coin['fineness'] }}</td>
 						<td>{{ $coin['coinage'] }}</td>
-						<td class="text-right">{{ number_format($coin['price'], 2, '.', ' ') }}</td>
-						<td class="text-right">{{ number_format($coin['quantity'], 0, '.', ' ') }}</td>
-						<td class="text-right">{{ number_format(($coin['price'] * $coin['quantity']), 2, '.', ' ') }}</td>
+						<td class="text-right text-nowrap">{{ number_format($coin['price'], 2, '.', ' ') }}</td>
+						<td class="text-right text-nowrap">{{ number_format($coin['quantity'], 0, '.', ' ') }}</td>
+						<td class="text-right text-nowrap">{{ number_format(($coin['price'] * $coin['quantity']), 2, '.', ' ') }}</td>
 					</tr>
 					@php($sum += $coin['price'] * $coin['quantity'])
 				@endforeach
