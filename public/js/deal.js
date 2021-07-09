@@ -202,14 +202,14 @@ $(document).ready(function() {
 					return;
 				}
 
-				$form.find('input').each(function() {
+				/*$form.find('input').each(function() {
 					$(this).val('');
 				});
 				$form.find('.preview-file').each(function() {
 					$(this).text('');
 				});
 				$('#passport-file-1').next('.custom-file-label').text('Первая страница паспорта');
-				$('#passport-file-2').next('.custom-file-label').text('Вторая страница паспорта');
+				$('#passport-file-2').next('.custom-file-label').text('Вторая страница паспорта');*/
 
 				toastr.success("", "Сделка #" + D.deal_id + " успешно сохранена");
 				setTimeout(function () {
