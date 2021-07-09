@@ -18,7 +18,7 @@ return [
 	// White list - List of allowed IP addresses
 	'allowed' => [
 		'127.0.0.1',
-		'79.165.125.12',
+		/*'79.165.125.12',*/
 	],
 
 	// Black list - List of denied IP addresses
