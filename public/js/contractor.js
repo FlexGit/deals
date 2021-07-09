@@ -32,9 +32,12 @@ $(document).ready(function() {
 	});
 
 	function getContractorList(page, contractorName) {
+		var $list = $('.js-contractor-list');
+		if (!$list.length) return;
+
 		$.ajax({
 			type: 'GET',
-			url: $('.js-contractor-list').data('action'),
+			url: $list.data('action'),
 			data: { page: page, contractor: contractorName },
 			dataType: 'json',
 			async: true,
