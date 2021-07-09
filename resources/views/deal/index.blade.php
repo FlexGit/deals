@@ -18,7 +18,7 @@
 								<input id="search-contractor-name" type="text" class="form-control" name="search-contractor-name" data-source-url="{{ route('contractor-search') }}" placeholder="ФИО">
 							</div>
 						</div>
-						<table class="table table-sm table-striped table-hover js-deal-list">
+						<table class="table table-sm table-striped table-hover js-deal-list" data-action="{{ route('deal-list') }}">
 							<thead>
 							<tr>
 								<th class="col-md-1 text-center border-right" scope="col">#</th>
