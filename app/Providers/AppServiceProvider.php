@@ -16,6 +16,9 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
 		$this->app['request']->server->set('HTTPS', true);
+		if (!app()->isLocal()) {
+			URL::forceScheme('https');
+		}
     }
 
     /**
@@ -26,6 +29,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
 		if (app()->environment('remote')) {
+			URL::forceScheme('https');
+		}
+		if (!app()->isLocal()) {
 			URL::forceScheme('https');
 		}
 		Paginator::useBootstrap();
