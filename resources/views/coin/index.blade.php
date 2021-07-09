@@ -18,7 +18,7 @@
 								<input id="search-coin-name" type="text" class="form-control" name="search-coin-name" data-source-url="{{ route('coin-search') }}" placeholder="Наименование">
 							</div>
 						</div>
-						<div class="js-coin-list"></div>
+						<div class="js-coin-list" data-action="{{ route('coin-list') }}"></div>
 					</div>
 				</div>
 			</div>

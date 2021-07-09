@@ -161,9 +161,12 @@ $(document).ready(function() {
 	});
 
 	function getCoinList(page, coinName) {
+		var $list = $('.js-coin-list');
+		if (!$list.length) return;
+
 		$.ajax({
 			type: 'GET',
-			url: '/coin-list/',
+			url: $list.data('action'),
 			data: { page: page, coin: coinName },
 			dataType: 'json',
 			async: true,
