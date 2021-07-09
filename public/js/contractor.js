@@ -34,7 +34,7 @@ $(document).ready(function() {
 	function getContractorList(page, contractorName) {
 		$.ajax({
 			type: 'GET',
-			url: '/contractor-list/',
+			url: $('.js-contractor-list').data('action'),
 			data: { page: page, contractor: contractorName },
 			dataType: 'json',
 			async: true,

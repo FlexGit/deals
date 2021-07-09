@@ -18,7 +18,7 @@
 								<input id="search-contractor-name" type="text" class="form-control" name="search-contractor-name" data-source-url="{{ route('contractor-search') }}" placeholder="ФИО">
 							</div>
 						</div>
-						<div class="js-contractor-list"></div>
+						<div class="js-contractor-list" data-action="{{ route('contractor-list') }}"></div>
 					</div>
 				</div>
 			</div>

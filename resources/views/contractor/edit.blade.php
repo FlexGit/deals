@@ -5,7 +5,7 @@
 		<div class="row justify-content-center">
 			<div class="col-md-9">
 				<div class="card">
-					<form id="contractor-form" method="POST" action="{{ route('contractor-save') }}" enctype="multipart/form-data">
+					<form id="contractor-form" method="POST" data-action="{{ route('contractor-list') }}" class="js-contractor-list" action="{{ route('contractor-save') }}" enctype="multipart/form-data">
 						@csrf
 
 						<div class="card-header d-flex justify-content-between">
