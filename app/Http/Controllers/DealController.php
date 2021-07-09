@@ -223,7 +223,7 @@ class DealController extends Controller {
 					'country' => $coinData['country'],
 					'year' => $coinData['year'],
 					'metal' => $coinData['metal'],
-					'denomindation' => $coinData['denomindation'],
+					'denomination' => $coinData['denomination'],
 					'fineness' => $coinData['fineness'],
 					'coinage' => $coinData['coinage'],
 				];
