@@ -31,6 +31,7 @@ class DealController extends Controller {
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
 	 */
 	public function getDeals() {
+		Log::debug($_SERVER['REMOTE_ADDR']);
 		return view('deal.index');
 	}
 	
