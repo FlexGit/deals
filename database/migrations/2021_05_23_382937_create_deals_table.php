@@ -14,7 +14,7 @@ class CreateDealsTable extends Migration {
         Schema::create('deals', function (Blueprint $table) {
             $table->id();
             $table->integer('contractor_id');
-			$table->text('data_json')->default('');
+			$table->text('data_json');
 			$table->timestamp('deal_date')->useCurrent();
 			$table->enum('deal_type', ['buy', 'sell']);
 			$table->integer('created_by');

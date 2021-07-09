@@ -14,7 +14,7 @@ class CreateCoinsTable extends Migration {
         Schema::create('coins', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-			$table->text('data_json')->default('');
+			$table->text('data_json');
 			$table->integer('created_by');
 			$table->integer('updated_by');
 			$table->timestamps();
