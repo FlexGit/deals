@@ -45,7 +45,6 @@
 		<div class="preview-file">
 			@if ($deal && array_key_exists('contractor', $deal->data_json) && array_key_exists('passport_file_1', $deal->data_json['contractor']))
 				<a href="javascript:void(0)" class="js-get-file" data-path="/file/{{ $deal->data_json['contractor']['passport_file_1']['ext'] }}/{{ $deal->data_json['contractor']['passport_file_1']['name'] }}">Открыть файл</a>
-				<a href="javascript:void(0)" class="js-get-file" data-path="/file/{{ $deal->data_json['contractor']['passport_file_1']['ext'] }}/{{ $deal->data_json['contractor']['passport_file_1']['name'] }}">Открыть файл</a>
 			@endif
 		</div>
 	</div>
