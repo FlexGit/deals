@@ -320,7 +320,7 @@ $(document).ready(function() {
 	function getDealList(contractorName) {
 		$.ajax({
 			type: 'GET',
-			url: '/deal-list/',
+			url: $('.js-deal-list').attr('action'),
 			data: { contractor: contractorName },
 			dataType: 'json',
 			async: true,
