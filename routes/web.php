@@ -14,7 +14,7 @@ use Illuminate\Auth\Middleware\Authenticate;
 |
 */
 
-Route::group(['middleware' => ['filterIp']], function () {
+/*Route::group(['middleware' => ['filterIp']], function () {*/
 	Auth::routes(['register' => false]);
 	
 	Route::group(['middleware' => ['auth']], function () {
@@ -44,7 +44,7 @@ Route::group(['middleware' => ['filterIp']], function () {
 		Route::post('/coin/save', [App\Http\Controllers\CoinController::class, 'save'])->name('coin-save');
 		Route::delete('/coin/{id}', [App\Http\Controllers\CoinController::class, 'delete'])->name('coin-delete');
 	});
-});
+/*});*/
 
 Route::fallback(function () {
 	abort(404);
