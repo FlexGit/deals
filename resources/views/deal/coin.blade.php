@@ -23,7 +23,7 @@
 			</div>
 
 			<div class="col-md-4">
-				<input type="text" class="form-control js-coin-year" name="coin-year[]" value="{{ ($coin && $coin['year']) ? $coin['year'] : '' }}" pattern="\d*" placeholder="Год выпуска">
+				<input type="text" class="form-control js-coin-year" name="coin-year[]" value="{{ ($coin && $coin['year']) ? $coin['year'] : '' }}" placeholder="Год выпуска">
 			</div>
 
 			<div class="col-md-4">
@@ -37,7 +37,7 @@
 			</div>
 
 			<div class="col-md-4">
-				<input type="text" class="form-control js-coin-fineness" name="coin-fineness[]" value="{{ ($coin && $coin['fineness']) ? $coin['fineness'] : '' }}" pattern="\d*" placeholder="Проба">
+				<input type="text" class="form-control js-coin-fineness" name="coin-fineness[]" value="{{ ($coin && $coin['fineness']) ? $coin['fineness'] : '' }}" placeholder="Проба">
 			</div>
 
 			<div class="col-md-4">
