@@ -23,6 +23,7 @@
 							<tr>
 								<th class="col-md-1 text-center border-right" scope="col">#</th>
 								<th class="col-md-3 text-center border-right" scope="col">Контрагент</th>
+								<th class="col-md-1 text-center border-right" scope="col">Тип сделки</th>
 								<th class="col-md-1 text-center border-right" scope="col">Дата</th>
 								<th class="col-md-2 text-center border-right" scope="col">Сумма, руб</th>
 								<th class="col-md-2 text-center border-right" scope="col">Документы</th>

@@ -69,7 +69,7 @@ class DealController extends Controller {
 			$dealsData[$deal->id] = [
 				'contractor' => array_key_exists('name', $deal->data_json['contractor']) ? $deal->data_json['contractor']['name'] : '',
 				'deal_date' => $deal->deal_date->format('d.m.Y'),
-				'deal_type' => $deal->deal_type,
+				'deal_type' => $deal->deal_type == 'buy' ? 'покупка' : 'продажа',
 				'deal_sum' => $dealSum,
 			];
 		}

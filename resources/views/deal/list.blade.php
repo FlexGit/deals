@@ -2,6 +2,7 @@
 	<tr>
 		<th class="text-center border-right" scope="row">{{ $dealId }}</th>
 		<td class="border-right">{{ $deal['contractor'] }}</td>
+		<td class="text-center border-right">{{ $deal['deal_type'] }}</td>
 		<td class="text-center border-right">{{ $deal['deal_date'] }}</td>
 		<td class="text-right border-right">{{ number_format($deal['deal_sum'], 2, '.', ' ') }}</td>
 		<td class="text-center border-right">
