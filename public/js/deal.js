@@ -318,7 +318,7 @@ $(document).ready(function() {
 	});
 
 	function getDealList(contractorName) {
-		let mix = require('laravel-mix');
+		//let mix = require('laravel-mix');
 		require('dotenv').config();
 		let url = process.env.APP_URL;
 
