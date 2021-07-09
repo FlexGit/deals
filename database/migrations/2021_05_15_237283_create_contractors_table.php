@@ -14,7 +14,7 @@ class CreateContractorsTable extends Migration {
         Schema::create('contractors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-			$table->text('data_json')->default('');
+			$table->text('data_json');
 			$table->integer('created_by');
 			$table->integer('updated_by');
 			$table->timestamps();
