@@ -69,6 +69,27 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row files">
+                                    <div class="col-md-12">
+                                        <h5 class="text-center">Файлы</h5>
+                                        @if ($deal && array_key_exists('files', $deal->data_json))
+                                            @foreach ($deal->data_json['files'] as $index => $file)
+                                                @include('deal.file', [
+                                                    'index' => $index,
+                                                    'file' => $file,
+                                                    'deal' => $deal,
+                                                ])
+                                            @endforeach
+                                        @endif
+
+                                        <div class="form-group">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="file" name="file">
+                                                <label class="custom-file-label" for="file">Файл</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

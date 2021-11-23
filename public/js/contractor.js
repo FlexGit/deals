@@ -22,7 +22,7 @@ $(document).ready(function() {
 		$(this).next('.custom-file-label').text(this.files[0].name);
 	});
 
-	$(document).on('click', '.js-get-file', function() {
+	$(document).on('click', '.js-get-passport', function() {
 		window.open($(this).data('path'), '_blank').focus();
 	});
 

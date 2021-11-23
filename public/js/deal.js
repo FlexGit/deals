@@ -172,7 +172,7 @@ $(document).ready(function() {
 		$(this).next('.custom-file-label').text(this.files[0].name);
 	});
 
-	$(document).on('click', '.js-get-file', function() {
+	$(document).on('click', '.js-get-passport, .js-get-file', function() {
 		window.open($(this).data('path'), '_blank').focus();
 	});
 
@@ -212,8 +212,9 @@ $(document).ready(function() {
 				$('#passport-file-2').next('.custom-file-label').text('Вторая страница паспорта');*/
 
 				toastr.success("", "Сделка #" + D.deal_id + " успешно сохранена");
+				console.log(D);
 				setTimeout(function () {
-					window.location.href = '/';
+					window.location.href = '/deal/' + D.deal_id;
 				}, 1500);
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
@@ -254,6 +255,36 @@ $(document).ready(function() {
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
 				$btn.attr('disabled', false);
+				toastr.error("", errorThrown.length ? errorThrown : 'Ошибка, попробуйте повторить операцию позже');
+			}
+		});
+	});
+
+	$(document).on('click', '.js-delete-file', function() {
+		if (!confirm('Вы уверены, что хотите удалить файл?')) {
+			return;
+		}
+
+		$.ajax({
+			type: 'DELETE',
+			url: $(this).data('action-url'),
+			dataType: 'json',
+			async: true,
+			cache: false,
+			global: false,
+			processData: false,
+			contentType: false,
+			success: function(D) {
+				if (D.status !== 'success') {
+					toastr.error("", D.reason ? D.reason : 'Ошибка, попробуйте повторить операцию позже');
+					return;
+				}
+				toastr.success("", "Файл успешно удален");
+				setTimeout(function () {
+					window.location.href = '/deal/' + D.deal_id;
+				}, 1500);
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
 				toastr.error("", errorThrown.length ? errorThrown : 'Ошибка, попробуйте повторить операцию позже');
 			}
 		});

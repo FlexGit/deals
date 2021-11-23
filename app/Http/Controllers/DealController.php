@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 
 class DealController extends Controller {
 	private $request;
@@ -246,10 +248,25 @@ class DealController extends Controller {
 		else {
 			$deal = new Deal();
 		}
+	
+		$fileData = array_key_exists('files', $deal->data_json) ? $deal->data_json['files'] : [];
+		if ($this->request->file('file')) {
+			$fileName =  Str::uuid()->toString();
+			$fileExt =  $this->request->file('file')->extension();
+		
+			if ($this->request->file('file')->storeAs('file', $fileName . '.' . $fileExt)) {
+				$fileData[] = [
+					'name' => $fileName,
+					'ext' => $fileExt,
+				];
+			}
+		}
+	
 		$deal->contractor_id = $contractor->id;
 		$deal->data_json = [
 			'contractor' => $contractorData,
 			'coins' => $coinsData,
+			'files' => $fileData,
 		];
 		$deal->deal_date = $this->request->post('deal-date');
 		$deal->deal_type = $this->request->post('deal-type');
@@ -290,5 +307,54 @@ class DealController extends Controller {
 		
 		return view('deal.specification')
 			->with('deal', $deal);
+	}
+	
+	public function deleteFile($id, $name, $ext) {
+		$deal = Deal::find($id);
+		if (!$deal) {
+			return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+		}
+		if (!array_key_exists('files', $deal->data_json)) {
+			return response()->json(['status' => 'error', 'reason' => 'Некорректные параметры']);
+		}
+		
+		$files = $deal->data_json['files'];
+		
+		$fileItem = array_filter($files, function($item) use ($name, $ext) {
+			return isset($item['name']) && $item['name'] == $name && isset($item['ext']) && $item['ext'] == $ext;
+		});
+		$file = current($fileItem);
+		
+		if (!$file || !Storage::disk('private')->exists('file/' . $file['name'] . '.' . $file['ext'])) {
+			return response()->json(['status' => 'error', 'reason' => 'Некорректные параметры']);
+		}
+		
+		if (Storage::disk('private')->delete('file/' . $file['name'] . '.' . $file['ext'])) {
+			$data = $deal->data_json;
+			$data['files'] = Arr::except($data['files'], [key($fileItem)]);
+			$deal->data_json = $data;
+			if ($deal->save()) {
+				return response()->json(['status' => 'success', 'deal_id' => $deal->id]);
+			}
+		}
+		
+		return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+	}
+	
+	/**
+	 * @param $ext
+	 * @param $name
+	 * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+	 */
+	public function getFile($ext, $name) {
+		if (!Storage::disk('private')->exists( 'file/' . $name . '.' . $ext)) {
+			return abort(404);
+		}
+		
+		return response()->download(storage_path('app/private/file/' . $name . '.' . $ext), null, [
+			'Cache-Control' => 'no-cache, no-store, must-revalidate',
+			'Pragma' => 'no-cache',
+			'Expires' => '0',
+		], null);
 	}
 }

@@ -26,13 +26,15 @@ Route::group(['middleware' => ['filterIp']], function () {
 		Route::delete('/deal/{id}', [App\Http\Controllers\DealController::class, 'delete'])->name('deal-delete');
 		Route::get('/deal/{id}/print/specification', [App\Http\Controllers\DealController::class, 'printSpecification'])->name('specification-print');
 		Route::get('/deal/{id}/print/worksheet', [App\Http\Controllers\DealController::class, 'printWorksheet'])->name('worksheet-print');
+		Route::delete('/deal/{id}/file/{name}/{ext}', [App\Http\Controllers\DealController::class, 'deleteFile'])->name('file-delete');
+		Route::get('/file/{ext}/{name}', [App\Http\Controllers\DealController::class, 'getFile'])->name('deal-file');
 
 		/* Contractor */
 		Route::get('/contractors/', [App\Http\Controllers\ContractorController::class, 'getContractors'])->name('contractor-index');
 		Route::get('/contractor-list/', [App\Http\Controllers\ContractorController::class, 'getList'])->name('contractor-list');
 		Route::get('/contractor/{id?}', [App\Http\Controllers\ContractorController::class, 'edit'])->name('contractor-edit');
 		Route::post('/contractor/search', [App\Http\Controllers\ContractorController::class, 'search'])->name('contractor-search');
-		Route::get('/file/{ext}/{name}', [App\Http\Controllers\ContractorController::class, 'getFile'])->name('contractor-file');
+		Route::get('/passport/{ext}/{name}', [App\Http\Controllers\ContractorController::class, 'getPassport'])->name('contractor-passport');
 		Route::post('/contractor/save', [App\Http\Controllers\ContractorController::class, 'save'])->name('contractor-save');
 		Route::delete('/contractor/{id}', [App\Http\Controllers\ContractorController::class, 'delete'])->name('contractor-delete');
 
