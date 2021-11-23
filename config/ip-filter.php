@@ -20,6 +20,7 @@ return [
 		'127.0.0.1',
 		'79.165.125.12',
 		'79.104.58.74',
+		'79.165.99.239',
 	],
 
 	// Black list - List of denied IP addresses
