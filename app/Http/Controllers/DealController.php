@@ -137,6 +137,8 @@ class DealController extends Controller {
 			$contractorData = $contractor->data_json;
 		}
 	
+		Log::debug($contractorData);
+	
 		$coinIds = $this->request->post('coin-id') ?: [];
 		$coinNames = $this->request->post('coin-name') ?: [];
 		$coinQuantities = $this->request->post('coin-quantity') ?: [];
@@ -261,8 +263,6 @@ class DealController extends Controller {
 				];
 			}
 		}
-	
-		Log::debug($contractorData);
 	
 		$deal->contractor_id = $contractor->id;
 		$deal->data_json = [
