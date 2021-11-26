@@ -99,7 +99,7 @@ class ContractorController extends Controller {
 	 * @param $name
 	 * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
 	 */
-	public function getFile($ext, $name) {
+	public function getPassport($ext, $name) {
 		if (!Storage::disk('private')->exists( 'passport/' . $name . '.' . $ext)) {
 			return abort(404);
 		}
