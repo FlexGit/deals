@@ -34,10 +34,10 @@ $(document).ready(function() {
 			$('#passport-office').val(suggestion.data.passport_office);
 			$('#passport-address').val(suggestion.data.passport_address);
 			if (suggestion.data.passport_file_1) {
-				$('#passport-file-1').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/file/' + suggestion.data.passport_file_1.ext + '/' + suggestion.data.passport_file_1.name +'">Открыть файл</a>');
+				$('#passport-file-1').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + suggestion.data.passport_file_1.ext + '/' + suggestion.data.passport_file_1.name +'">Открыть файл</a>');
 			}
 			if (suggestion.data.passport_file_2) {
-				$('#passport-file-2').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/file/' + suggestion.data.passport_file_2.ext + '/' + suggestion.data.passport_file_2.name + '">Открыть файл</a>');
+				$('#passport-file-2').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + suggestion.data.passport_file_2.ext + '/' + suggestion.data.passport_file_2.name + '">Открыть файл</a>');
 			}
 		}
 	}).keyup(function() {
