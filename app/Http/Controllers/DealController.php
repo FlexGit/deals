@@ -182,6 +182,8 @@ class DealController extends Controller {
 		if ($this->request->post('passport-address')) {
 			$contractorData['passport_address'] = $this->request->post('passport-address');
 		}
+		Log::debug($this->request->file('passport-file-1'));
+		Log::debug($this->request->file('passport-file-2'));
 		if ($this->request->file('passport-file-1')) {
 			$passportFile1Name =  Str::uuid()->toString();
 			$passportFile1Ext =  $this->request->file('passport-file-1')->extension();
