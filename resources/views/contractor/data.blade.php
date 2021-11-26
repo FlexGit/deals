@@ -44,7 +44,7 @@
 	<div class="col-md-3 text-md-right pt-1">
 		<div class="preview-file">
 			@if ($contractor && array_key_exists('passport_file_1', $contractor->data_json))
-				<a href="javascript:void(0)" class="js-get-file" data-path="/file/{{ $contractor->data_json['passport_file_1']['ext'] }}/{{ $contractor->data_json['passport_file_1']['name'] }}">Открыть файл</a>
+				<a href="javascript:void(0)" class="js-get-passport" data-path="/passport/{{ $contractor->data_json['passport_file_1']['ext'] }}/{{ $contractor->data_json['passport_file_1']['name'] }}">Открыть файл</a>
 			@endif
 		</div>
 	</div>
@@ -60,7 +60,7 @@
 	<div class="col-md-3 text-md-right pt-1">
 		<div class="preview-file">
 			@if ($contractor && array_key_exists('passport_file_2', $contractor->data_json))
-				<a href="javascript:void(0)" class="js-get-file" data-path="/file/{{ $contractor->data_json['passport_file_2']['ext'] }}/{{ $contractor->data_json['passport_file_2']['name'] }}">Открыть файл</a>
+				<a href="javascript:void(0)" class="js-get-passport" data-path="/passport/{{ $contractor->data_json['passport_file_2']['ext'] }}/{{ $contractor->data_json['passport_file_2']['name'] }}">Открыть файл</a>
 			@endif
 		</div>
 	</div>

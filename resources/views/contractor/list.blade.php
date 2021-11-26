@@ -22,11 +22,11 @@
 			<td class="border-right">{{ $contractor['data_json']['passport_address'] }}</td>
 			<td class="text-center border-right">
 				@if(array_key_exists('passport_file_1', $contractor['data_json']))
-					<a href="javascript:void(0)" class="js-get-file" data-path="/file/{{ $contractor['data_json']['passport_file_1']['ext'] }}/{{ $contractor['data_json']['passport_file_1']['name'] }}">Первая страница</a>
+					<a href="javascript:void(0)" class="js-get-passport" data-path="/passport/{{ $contractor['data_json']['passport_file_1']['ext'] }}/{{ $contractor['data_json']['passport_file_1']['name'] }}">Первая страница</a>
 				@endif
 				@if(array_key_exists('passport_file_2', $contractor['data_json']))
 					<br>
-					<a href="javascript:void(0)" class="js-get-file" data-path="/file/{{ $contractor['data_json']['passport_file_2']['ext'] }}/{{ $contractor['data_json']['passport_file_2']['name'] }}">Вторая страница</a>
+					<a href="javascript:void(0)" class="js-get-passport" data-path="/passport/{{ $contractor['data_json']['passport_file_2']['ext'] }}/{{ $contractor['data_json']['passport_file_2']['name'] }}">Вторая страница</a>
 				@endif
 			</td>
 			<td class="text-center">
