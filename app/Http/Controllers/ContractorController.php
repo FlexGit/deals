@@ -134,6 +134,18 @@ class ContractorController extends Controller {
 			return response()->json(['status' => 'error', 'reason' => implode('<br>', $validator->errors()->all())]);
 		}
 		
+		$contractorId = $this->request->post('contractor-id') ?: '';
+		
+		if ($contractorId) {
+			$contractor = Contractor::find($contractorId);
+			if (!$contractor) {
+				return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+			}
+		} else {
+			$contractor = new Contractor();
+			$contractor->created_by = Auth::id();
+		}
+		
 		$contractorData = [];
 		if ($this->request->post('contractor-name')) {
 			$contractorData['name'] = $this->request->post('contractor-name');
@@ -163,6 +175,8 @@ class ContractorController extends Controller {
 					'ext' => $passportFile1Ext,
 				];
 			}
+		} else {
+			$contractorData['passport_file_1'] = $contractor->data_json['passport_file_1'];
 		}
 		if ($this->request->file('passport-file-2')) {
 			$passportFile2Name =  Str::uuid()->toString();
@@ -174,20 +188,10 @@ class ContractorController extends Controller {
 					'ext' => $passportFile2Ext,
 				];
 			}
+		} else {
+			$contractorData['passport_file_2'] = $contractor->data_json['passport_file_2'];
 		}
 		
-		$contractorId = $this->request->post('contractor-id') ?: '';
-		
-		if ($contractorId) {
-			$contractor = Contractor::find($contractorId);
-			if (!$contractor) {
-				return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
-			}
-		}
-		else {
-			$contractor = new Contractor();
-			$contractor->created_by = Auth::id();
-		}
 		$contractor->name = $this->request->post('contractor-name');
 		$contractor->data_json = $contractorData;
 		$contractor->updated_by = Auth::id();
