@@ -131,6 +131,7 @@ class DealController extends Controller {
 		$contractorId = $this->request->post('contractor-id') ?: '';
 		if ($contractorId) {
 			$contractor = Contractor::find($contractorId);
+			Log::debug($contractor);
 			if (!$contractor) {
 				return response()->json(['status' => 'error', 'reason' => 'Ошибка, контрагента #' . $contractorId . ' не существует']);
 			}
