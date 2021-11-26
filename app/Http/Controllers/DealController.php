@@ -131,14 +131,21 @@ class DealController extends Controller {
 		$contractorId = $this->request->post('contractor-id') ?: '';
 		if ($contractorId) {
 			$contractor = Contractor::find($contractorId);
-			Log::debug($contractor);
 			if (!$contractor) {
 				return response()->json(['status' => 'error', 'reason' => 'Ошибка, контрагента #' . $contractorId . ' не существует']);
 			}
 			$contractorData = $contractor->data_json;
 		}
 	
-		Log::debug($contractorData);
+		if ($dealId) {
+			$deal = Deal::find($dealId);
+			if (!$deal) {
+				return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+			}
+		}
+		else {
+			$deal = new Deal();
+		}
 	
 		$coinIds = $this->request->post('coin-id') ?: [];
 		$coinNames = $this->request->post('coin-name') ?: [];
@@ -195,6 +202,8 @@ class DealController extends Controller {
 					'ext' => $passportFile1Ext,
 				];
 			}
+		} else {
+			$contractorData['passport_file_1'] = $deal->data_json['contractor']['passport_file_1'];
 		}
 		if ($this->request->file('passport-file-2')) {
 			$passportFile2Name =  Str::uuid()->toString();
@@ -206,6 +215,8 @@ class DealController extends Controller {
 					'ext' => $passportFile2Ext,
 				];
 			}
+		} else {
+			$contractorData['passport_file_2'] = $deal->data_json['contractor']['passport_file_2'];
 		}
 		
 		if (!$contractorId) {
@@ -240,16 +251,6 @@ class DealController extends Controller {
 				}
 				$coinsData[$index]['id'] = $coin->id;
 			}
-		}
-	
-		if ($dealId) {
-			$deal = Deal::find($dealId);
-			if (!$deal) {
-				return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
-			}
-		}
-		else {
-			$deal = new Deal();
 		}
 	
 		$fileData = array_key_exists('files', $deal->data_json) ? $deal->data_json['files'] : [];
