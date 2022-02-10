@@ -14,7 +14,7 @@ use Illuminate\Auth\Middleware\Authenticate;
 |
 */
 
-Route::group(['middleware' => ['filterIp']], function () {
+Route::group(['middleware' => [/*'filterIp'*/]], function () {
 	Auth::routes(['register' => false]);
 	
 	Route::group(['middleware' => ['auth']], function () {
