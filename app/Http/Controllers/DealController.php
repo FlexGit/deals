@@ -70,7 +70,7 @@ class DealController extends Controller {
 				$dealSum += $coin['quantity'] * $coin['price'];
 			}
 			$dealsData[$deal->id] = [
-				'contractor' => array_key_exists('name', $deal->data_json['contractor']) ? $deal->data_json['contractor']['name'] : '',
+				'contractor' => (is_array($deal->data_json) && array_key_exists('name', $deal->data_json['contractor'])) ? $deal->data_json['contractor']['name'] : '',
 				'deal_date' => $deal->deal_date->format('d.m.Y'),
 				'deal_type' => $deal->deal_type == 'buy' ? 'покупка' : 'продажа',
 				'deal_sum' => $dealSum,
@@ -253,7 +253,7 @@ class DealController extends Controller {
 			}
 		}
 	
-		$fileData = array_key_exists('files', $deal->data_json) ? $deal->data_json['files'] : [];
+		$fileData = (is_array($deal->data_json) && array_key_exists('files', $deal->data_json)) ? $deal->data_json['files'] : [];
 		if ($this->request->file('file')) {
 			$fileName =  Str::uuid()->toString();
 			$fileExt =  $this->request->file('file')->extension();
@@ -318,7 +318,7 @@ class DealController extends Controller {
 		if (!$deal) {
 			return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
 		}
-		if (!array_key_exists('files', $deal->data_json)) {
+		if (is_array($deal->data_json) && !array_key_exists('files', $deal->data_json)) {
 			return response()->json(['status' => 'error', 'reason' => 'Некорректные параметры']);
 		}
 		
