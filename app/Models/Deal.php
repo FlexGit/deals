@@ -27,6 +27,7 @@ class Deal extends Model {
      */
     protected $fillable = [
         'contractor_id',
+		'passport_id',
         'data_json',
 		'deal_date',
 		'deal_type',
@@ -46,11 +47,19 @@ class Deal extends Model {
      * @var array
      */
     protected $casts = [
+		'deal_date' => 'datetime:Y-m-d H:i:s',
+		'created_at' => 'datetime:Y-m-d H:i:s',
+		'updated_at' => 'datetime:Y-m-d H:i:s',
 		'data_json' => 'array',
     ];
 	
-	public function contractor() {
-		return $this->hasOne('App\Models\Contractor', 'id', 'contractor_id');
+	public function contractor()
+	{
+		return $this->hasOne(Contractor::class, 'id', 'contractor_id');
 	}
 	
+	public function passport()
+	{
+		return $this->hasOne(Passport::class, 'id', 'passport_id');
+	}
 }

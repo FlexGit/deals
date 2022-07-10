@@ -33,6 +33,7 @@ Route::group(['middleware' => [/*'filterIp'*/]], function () {
 		Route::get('/contractors/', [App\Http\Controllers\ContractorController::class, 'getContractors'])->name('contractor-index');
 		Route::get('/contractor-list/', [App\Http\Controllers\ContractorController::class, 'getList'])->name('contractor-list');
 		Route::get('/contractor/{id?}', [App\Http\Controllers\ContractorController::class, 'edit'])->name('contractor-edit');
+		Route::get('/contractor/{contractor_id}/passport/{passport_id}', [App\Http\Controllers\ContractorController::class, 'getPassportVersion']);
 		Route::post('/contractor/search', [App\Http\Controllers\ContractorController::class, 'search'])->name('contractor-search');
 		Route::get('/passport/{ext}/{name}', [App\Http\Controllers\ContractorController::class, 'getPassport'])->name('contractor-passport');
 		Route::post('/contractor/save', [App\Http\Controllers\ContractorController::class, 'save'])->name('contractor-save');

@@ -116,6 +116,7 @@ class DealController extends Controller {
 			'coin-country.*' => 'nullable|max:255',
 			'coin-year.*' => 'nullable|max:255',
 			'coin-metal.*' => 'nullable|max:255',
+			'coin-metal-weight.*' => 'nullable|max:255',
 			'coin-denomination.*' => 'nullable|max:255',
 			'coin-fineness.*' => 'nullable|max:255',
 			'coin-coinage.*' => 'nullable|max:255',
@@ -154,6 +155,7 @@ class DealController extends Controller {
 		$coinCountries = $this->request->post('coin-country') ?: [];
 		$coinYears = $this->request->post('coin-year') ?: [];
 		$coinMetals = $this->request->post('coin-metal') ?: [];
+		$coinMetalWeights = $this->request->post('coin-metal-weight') ?: [];
 		$coinDenominations = $this->request->post('coin-denomination') ?: [];
 		$coinFinenesses = $this->request->post('coin-fineness') ?: [];
 		$coinCoinages = $this->request->post('coin-coinage') ?: [];
@@ -168,6 +170,7 @@ class DealController extends Controller {
 				'country' => array_key_exists($index, $coinCountries) ? $coinCountries[$index] : '',
 				'year' => array_key_exists($index, $coinYears) ? $coinYears[$index] : '',
 				'metal' => array_key_exists($index, $coinMetals) ? $coinMetals[$index] : '',
+				'metalWeight' => array_key_exists($index, $coinMetalWeights) ? $coinMetalWeights[$index] : '',
 				'denomination' => array_key_exists($index, $coinDenominations) ? $coinDenominations[$index] : '',
 				'fineness' => array_key_exists($index, $coinFinenesses) ? $coinFinenesses[$index] : '',
 				'coinage' => array_key_exists($index, $coinCoinages) ? $coinCoinages[$index] : '',
@@ -240,6 +243,7 @@ class DealController extends Controller {
 					'country' => $coinData['country'],
 					'year' => $coinData['year'],
 					'metal' => $coinData['metal'],
+					'metalWeight' => $coinData['metalWeight'],
 					'denomination' => $coinData['denomination'],
 					'fineness' => $coinData['fineness'],
 					'coinage' => $coinData['coinage'],
@@ -313,7 +317,7 @@ class DealController extends Controller {
 			->with('deal', $deal);
 	}
 	
-	public function deleteFile($id, $name, $ext) {
+	/*public function deleteFile($id, $name, $ext) {
 		$deal = Deal::find($id);
 		if (!$deal) {
 			return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
@@ -343,14 +347,14 @@ class DealController extends Controller {
 		}
 		
 		return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
-	}
+	}*/
 	
 	/**
 	 * @param $ext
 	 * @param $name
 	 * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
 	 */
-	public function getFile($ext, $name) {
+	/*public function getFile($ext, $name) {
 		if (!Storage::disk('private')->exists( 'file/' . $name . '.' . $ext)) {
 			return abort(404);
 		}
@@ -360,5 +364,5 @@ class DealController extends Controller {
 			'Pragma' => 'no-cache',
 			'Expires' => '0',
 		], null);
-	}
+	}*/
 }

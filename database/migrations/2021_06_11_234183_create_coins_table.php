@@ -13,10 +13,10 @@ class CreateCoinsTable extends Migration {
     public function up() {
         Schema::create('coins', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-			$table->text('data_json');
-			$table->integer('created_by');
-			$table->integer('updated_by');
+            $table->string('name')->nullable();
+			$table->text('data_json')->nullable();
+			$table->integer('created_by')->default(0)->index();
+			$table->integer('updated_by')->default(0)->index();
 			$table->timestamps();
 		});
     }

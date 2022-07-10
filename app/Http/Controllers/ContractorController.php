@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Passport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -81,13 +82,21 @@ class ContractorController extends Controller {
 	
 		$suggestions = [];
 		foreach ($contractors as $contractor) {
-			$data_json = $contractor->data_json;
-			$data_json['passport_date'] = \Carbon\Carbon::createFromTimestamp($contractor->data_json['passport_date'])->format('Y-m-d');
+			/*$data_json = $contractor->data_json;
+			$data_json['passport_date'] = \Carbon\Carbon::createFromTimestamp($contractor->data_json['passport_date'])->format('Y-m-d');*/
+			
+			\Log::debug($contractor->passports->toArray());
+			
+			$passports = $contractor->passports;
+			$lastPassport = $contractor->passports->first();
 			
 			$suggestions[] = [
 				'value' => $contractor->name,
 				'id' => $contractor->id,
-				'data' => $data_json,
+				'data' => [
+					'lastPassport' => $lastPassport,
+					'passports' => $passports,
+				],
 			];
 		}
 		
@@ -125,7 +134,12 @@ class ContractorController extends Controller {
 			'passport-number' => 'required|max:255',
 			'passport-date' => 'required|date|after:01.01.1900',
 			'passport-office' => 'required|max:255',
-			'passport-address' => 'required|max:255',
+			'passport-zipcode' => 'required|numeric',
+			'passport-region' => 'required|max:255',
+			'passport-city' => 'required|max:255',
+			'passport-street' => 'required|max:255',
+			'passport-house' => 'required|max:255',
+			'passport-apartment' => 'required|max:255',
 			'passport-file-1' => 'required_without:contractor-id|image|max:10240',
 			'passport-file-2' => 'required_without:contractor-id|image|max:10240',
 		];
@@ -139,7 +153,7 @@ class ContractorController extends Controller {
 		if ($contractorId) {
 			$contractor = Contractor::find($contractorId);
 			if (!$contractor) {
-				return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+				return response()->json(['status' => 'error', 'reason' => 'Ошибка, контрагент не найден']);
 			}
 		} else {
 			$contractor = new Contractor();
@@ -162,8 +176,23 @@ class ContractorController extends Controller {
 		if ($this->request->post('passport-office')) {
 			$contractorData['passport_office'] = $this->request->post('passport-office');
 		}
-		if ($this->request->post('passport-address')) {
-			$contractorData['passport_address'] = $this->request->post('passport-address');
+		if ($this->request->post('passport-zipcode')) {
+			$contractorData['passport_zipcode'] = $this->request->post('passport-zipcode');
+		}
+		if ($this->request->post('passport-region')) {
+			$contractorData['passport_region'] = $this->request->post('passport-region');
+		}
+		if ($this->request->post('passport-city')) {
+			$contractorData['passport_city'] = $this->request->post('passport-city');
+		}
+		if ($this->request->post('passport-street')) {
+			$contractorData['passport_street'] = $this->request->post('passport-street');
+		}
+		if ($this->request->post('passport-house')) {
+			$contractorData['passport_house'] = $this->request->post('passport-house');
+		}
+		if ($this->request->post('passport-apartment')) {
+			$contractorData['passport_apartment'] = $this->request->post('passport-apartment');
 		}
 		if ($this->request->file('passport-file-1')) {
 			$passportFile1Name =  Str::uuid()->toString();
@@ -176,7 +205,7 @@ class ContractorController extends Controller {
 				];
 			}
 		} else {
-			$contractorData['passport_file_1'] = $contractor->data_json['passport_file_1'];
+			$contractorData['passport_file_1'] = isset($contractor->data_json['passport_file_1']) ? $contractor->data_json['passport_file_1'] : '';
 		}
 		if ($this->request->file('passport-file-2')) {
 			$passportFile2Name =  Str::uuid()->toString();
@@ -189,7 +218,7 @@ class ContractorController extends Controller {
 				];
 			}
 		} else {
-			$contractorData['passport_file_2'] = $contractor->data_json['passport_file_2'];
+			$contractorData['passport_file_2'] = isset($contractor->data_json['passport_file_2']) ? $contractor->data_json['passport_file_2'] : '';
 		}
 		
 		$contractor->name = $this->request->post('contractor-name');
@@ -213,7 +242,7 @@ class ContractorController extends Controller {
 		
 		$contractor = Contractor::find($id);
 		if (!$contractor) {
-			return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+			return response()->json(['status' => 'error', 'reason' => 'Ошибка, контрагент не найден']);
 		}
 		
 		if (!$contractor->delete()) {
@@ -223,4 +252,27 @@ class ContractorController extends Controller {
 		return response()->json(['status' => 'success', 'contractor_id' => $id]);
 	}
 	
+	/**
+	 * @param $contractorId
+	 * @param $passportId
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	public function getPassportVersion($contractorId, $passportId) {
+		if (!$this->request->ajax()) {
+			return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+		}
+		
+		$contractor = Contractor::find($contractorId);
+		if (!$contractor) {
+			return response()->json(['status' => 'error', 'reason' => 'Ошибка, контрагент не найден']);
+		}
+		
+		$passport = Passport::where('contractor_id', $contractorId)
+			->find($passportId);
+		if (!$passport) {
+			return response()->json(['status' => 'error', 'reason' => 'Ошибка, версия паспорта не найдена']);
+		}
+		
+		return response()->json(['status' => 'success', 'passport' => $passport]);
+	}
 }

@@ -1,3 +1,6 @@
+body {
+	font-family: system-ui, Raleway, sans-serif;
+}
 input[readonly]{
 	background-color: transparent !important;
 }
@@ -48,5 +51,11 @@ input[readonly]{
 	top: 0;
 }
 .border-between > [class*='col-']:first-child:before {
+	display: none;
+}
+label {
+	margin-bottom: 0;
+}
+.hidden {
 	display: none;
 }

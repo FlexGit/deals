@@ -14,13 +14,15 @@
     {{--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>--}}
     <script src="{{ asset('assets/vendor/toastr/toastr.min.js') }}" defer></script>
     <script src="{{ asset('js/jquery.autocomplete.min.js') }}" defer></script>
+    <script src="{{ asset('js/moment.min.js') }}" defer></script>
+    <script src="{{ asset('js/moment-with-locales.min.js') }}" defer></script>
     <script src="{{ asset('js/common.js') }}" defer></script>
     @if(Route::is('deal-index') || Route::is('deal-edit'))
-        <script src="{{ asset('js/deal.js') }}" defer></script>
+        <script src="{{ asset('js/deal.js?v=' . time()) }}" defer></script>
     @elseif(Route::is('contractor-index') || Route::is('contractor-edit'))
-        <script src="{{ asset('js/contractor.js') }}" defer></script>
+        <script src="{{ asset('js/contractor.js?v=' . time()) }}" defer></script>
     @elseif(Route::is('coin-index') || Route::is('coin-edit'))
-        <script src="{{ asset('js/coin.js') }}" defer></script>
+        <script src="{{ asset('js/coin.js?v=' . time()) }}" defer></script>
     @endif
 
     <!-- Fonts -->
@@ -32,7 +34,7 @@
     <link href="{{ asset('assets/vendor/toastr/toastr.min.css') }}" rel="stylesheet">
     {{--<link href="{{ asset('css/bootstrap-datepicker3.min.css') }}" rel="stylesheet">--}}
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-    <link href="{{ asset('css/common.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/common.css?v=1') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">

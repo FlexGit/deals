@@ -1,61 +1,76 @@
 <div class="row coin-container">
-	<input class="js-coin-id" type="hidden" name="coin-id[]" value="{{ ($coin && $coin['id']) ? $coin['id'] : '' }}">
+	<input class="js-coin-id" type="hidden" name="coin-id[]" value="{{ ($coin && isset($coin['id'])) ? $coin['id'] : '' }}">
 
 	<div class="col-md-12">
-		<div class="form-group row">
-			<div class="col-md-3 col-form-label d-flex justify-content-start">
+		<div class="row form-group">
+			<div class="col-md-2 col-form-label d-flex justify-content-start">
 				<div>
 					[<a href="javascript:void(0);" class="js-delete-coin" role="button" tabindex="-1"><i class="icon-remove" aria-hidden="true"></i></a>]
 				</div>
 				<div style="margin-left: 10px;">
-					<span class="font-weight-bold">{{ __('Монета #') }}</span><span class="font-weight-bold coin-number">{{ ($index + 1) }}</span>
+					<span>{{ __('Монета #') }}</span><span class="coin-number">{{ ($index + 1) }}</span>
 				</div>
 			</div>
 
-			<div class="col-md-9">
-				<input type="text" class="form-control js-coin-name" name="coin-name[]" value="{{ ($coin && $coin['name']) ? $coin['name'] : '' }}" data-source-url="{{ route('coin-search') }}" placeholder="Наименование" required>
+			<div class="col-md-6">
+				<label class="font-weight-bold">Наименование</label>
+				<input type="text" class="form-control js-coin-name" name="coin-name[]" value="{{ ($coin && isset($coin['name'])) ? $coin['name'] : '' }}" data-source-url="{{ route('coin-search') }}" placeholder="Наименование" required>
+			</div>
+
+			<div class="col-md-4">
+				<label class="font-weight-bold">Страна</label>
+				<input type="text" class="form-control js-coin-country" name="coin-country[]" value="{{ ($coin && isset($coin['country'])) ? $coin['country'] : '' }}" placeholder="Страна">
 			</div>
 		</div>
 
 		<div class="form-group row js-extend-coin d-none">
-			<div class="col-md-4">
-				<input type="text" class="form-control js-coin-country" name="coin-country[]" value="{{ ($coin && $coin['country']) ? $coin['country'] : '' }}" placeholder="Страна">
+			<div class="col-md-2">
+				<label class="font-weight-bold">Год выпуска</label>
+				<input type="text" class="form-control js-coin-year" name="coin-year[]" value="{{ ($coin && isset($coin['year'])) ? $coin['year'] : '' }}" placeholder="Год выпуска">
 			</div>
 
-			<div class="col-md-4">
-				<input type="text" class="form-control js-coin-year" name="coin-year[]" value="{{ ($coin && $coin['year']) ? $coin['year'] : '' }}" placeholder="Год выпуска">
+			<div class="col-md-2">
+				<label class="font-weight-bold">Металл</label>
+				<input type="text" class="form-control js-coin-metal" name="coin-metal[]" value="{{ ($coin && isset($coin['metal'])) ? $coin['metal'] : '' }}" placeholder="Металл">
 			</div>
 
-			<div class="col-md-4">
-				<input type="text" class="form-control js-coin-metal" name="coin-metal[]" value="{{ ($coin && $coin['metal']) ? $coin['metal'] : '' }}" placeholder="Металл">
-			</div>
-		</div>
-
-		<div class="form-group row js-extend-coin d-none">
-			<div class="col-md-4">
-				<input type="text" class="form-control js-coin-denomination" name="coin-denomination[]" value="{{ ($coin && $coin['denomination']) ? $coin['denomination'] : '' }}" placeholder="Номинал">
+			<div class="col-md-2">
+				<label class="font-weight-bold">Вес металла</label>
+				<input type="text" class="form-control js-coin-metal-weight" name="coin-metal-weight[]" value="{{ ($coin && isset($coin['metalWeight'])) ? $coin['metalWeight'] : '' }}" placeholder="Вес металла">
 			</div>
 
-			<div class="col-md-4">
-				<input type="text" class="form-control js-coin-fineness" name="coin-fineness[]" value="{{ ($coin && $coin['fineness']) ? $coin['fineness'] : '' }}" placeholder="Проба">
+			<div class="col-md-2">
+				<label class="font-weight-bold">Номинал</label>
+				<input type="text" class="form-control js-coin-denomination" name="coin-denomination[]" value="{{ ($coin && isset($coin['denomination'])) ? $coin['denomination'] : '' }}" placeholder="Номинал">
 			</div>
 
-			<div class="col-md-4">
-				<input type="text" class="form-control js-coin-coinage" name="coin-coinage[]" value="{{ ($coin && $coin['coinage']) ? $coin['coinage'] : '' }}" placeholder="Чеканка">
+			<div class="col-md-2">
+				<label class="font-weight-bold">Проба</label>
+				<input type="text" class="form-control js-coin-fineness" name="coin-fineness[]" value="{{ ($coin && isset($coin['fineness'])) ? $coin['fineness'] : '' }}" placeholder="Проба">
+			</div>
+
+			<div class="col-md-2">
+				<label class="font-weight-bold">Чеканка</label>
+				<input type="text" class="form-control js-coin-coinage" name="coin-coinage[]" value="{{ ($coin && isset($coin['coinage'])) ? $coin['coinage'] : '' }}" placeholder="Чеканка">
 			</div>
 		</div>
 
 		<div class="form-group row mb-0">
-			<div class="col-md-4">
-				<input type="number" class="form-control js-coin-quantity" name="coin-quantity[]" value="{{ ($coin && $coin['quantity']) ? $coin['quantity'] : '' }}" min="0" placeholder="Кол-во" required>
+			<div class="col-md-2">
+			</div>
+			<div class="col-md-3">
+				<label class="font-weight-bold">Количество</label>
+				<input type="number" class="form-control text-right js-coin-quantity" name="coin-quantity[]" value="{{ ($coin && isset($coin['quantity'])) ? $coin['quantity'] : '' }}" min="0" placeholder="0" required>
+			</div>
+
+			<div class="col-md-3">
+				<label class="font-weight-bold">Цена</label>
+				<input type="text" class="form-control text-right js-coin-price" name="coin-price[]" value="{{ ($coin && isset($coin['price'])) ? $coin['price'] : '' }}" pattern="\d*" placeholder="0" required>
 			</div>
 
 			<div class="col-md-4">
-				<input type="text" class="form-control js-coin-price" name="coin-price[]" value="{{ ($coin && $coin['price']) ? $coin['price'] : '' }}" pattern="\d*" placeholder="Цена" required>
-			</div>
-
-			<div class="col-md-4">
-				<input type="text" class="form-control js-coin-sum" name="coin-sum[]" value="{{ ($coin && $coin['quantity'] && $coin['price']) ? ($coin['quantity'] * $coin['price']) : '' }}" pattern="\d*" placeholder="Сумма" required readonly>
+				<label class="font-weight-bold">Сумма</label>
+				<input type="text" class="form-control text-right js-coin-sum" name="coin-sum[]" value="{{ ($coin && isset($coin['quantity']) && isset($coin['price'])) ? ($coin['quantity'] * $coin['price']) : '' }}" pattern="\d*" placeholder="0" required readonly>
 			</div>
 		</div>
 

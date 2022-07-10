@@ -1,13 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container" style="max-width: 90%;">
+<div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="card">
-                <form id="deal-form" method="POST" class="js-deal-list" data-action="{{ route('deal-list') }}" action="{{ route('deal-save') }}" enctype="multipart/form-data">
-                    @csrf
-
+            <form id="deal-form" method="POST" class="js-deal-list" data-action="{{ route('deal-list') }}" action="{{ route('deal-save') }}" enctype="multipart/form-data">
+                @csrf
+                <div class="card">
                     <input type="hidden" id="deal-id" name="deal-id" value="{{ $deal ? $deal->id : '' }}">
 
                     <div class="card-header d-flex justify-content-between">
@@ -21,74 +20,63 @@
                     </div>
 
                     <div class="card-body">
-                        <div class="row border-between">
-                            <div class="col-md-6 pr-5 contractor-wrapper">
-                                <div class="form-group row">
-                                    <label for="deal-date" class="col-md-3 col-form-label text-md-right font-weight-bold">{{ __('Дата сделки') }}</label>
-                                    <div class="col-md-4">
-                                        <input id="deal-date" type="date" class="form-control" name="deal-date" value="{{ $deal ? $deal->deal_date->format('Y-m-d') : date('Y-m-d') }}" required>
+                        <div class="form-group row">
+                            <div class="col-md-3 vertical-align-middle">
+                                <label for="deal-date" class="font-weight-bold">Тип сделки</label>
+                                <div>
+                                    <div class="custom-control custom-radio custom-control-inline" style="margin-top: 0.5rem;">
+                                        <input type="radio" class="custom-control-input" id="deal-type-buy" name="deal-type" value="buy" required {{ ($deal && $deal->deal_type == 'buy') ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="deal-type-buy">Покупка</label>
                                     </div>
-                                    <div class="col-md-5 vertical-align-middle">
-                                        <div class="custom-control custom-radio custom-control-inline" style="margin-top: 0.5rem;">
-                                            <input type="radio" class="custom-control-input" id="deal-type-buy" name="deal-type" value="buy" required {{ ($deal && $deal->deal_type == 'buy') ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="deal-type-buy">Покупка</label>
-                                        </div>
-                                        <div class="custom-control custom-radio custom-control-inline" style="margin-top: 0.5rem;">
-                                            <input type="radio" class="custom-control-input" id="deal-type-sell" name="deal-type" value="sell" required {{ ($deal && $deal->deal_type == 'sell') ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="deal-type-sell">Продажа</label>
-                                        </div>
+                                    <div class="custom-control custom-radio custom-control-inline" style="margin-top: 0.5rem;">
+                                        <input type="radio" class="custom-control-input" id="deal-type-sell" name="deal-type" value="sell" required {{ ($deal && $deal->deal_type == 'sell') ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="deal-type-sell">Продажа</label>
                                     </div>
                                 </div>
-
-                                <hr>
-
-                                @include('deal.contractor', [
-									'deal' => $deal,
-								])
                             </div>
+                            <div class="col-md-3">
+                                <label for="deal-date" class="font-weight-bold">Дата сделки</label>
+                                <input id="deal-date" type="date" class="form-control" name="deal-date" value="{{ $deal ? $deal->deal_date->format('Y-m-d') : date('Y-m-d') }}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="col-md-6 pl-5 coin-wrapper">
-                                <div class="row coins">
-                                    <div class="col-md-12">
-                                        @if ($deal && array_key_exists('coins', $deal->data_json))
-                                            @foreach ($deal->data_json['coins'] as $index => $coin)
-                                                @include('deal.coin', [
-                                                    'index' => $index,
-                                                    'coin' => $coin,
-                                                ])
-                                            @endforeach
-                                        @else
-                                            @include('deal.coin', [
-                                                'index' => 0,
-                                                'coin' => [],
-                                            ])
-                                        @endif
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <span class="lead">Контрагент</span>
+                    </div>
+                    <div class="card-body">
+                        @include('deal.contractor', [
+                            'deal' => $deal,
+                        ])
+                    </div>
+                </div>
 
-                                        <div class="form-group row">
-                                            <a href="javascript:void(0)" class="btn btn-link js-add-coin" role="button" tabindex="-1">{{ __('Добавить монету') }}</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row files">
-                                    <div class="col-md-12">
-                                        <h5 class="text-center">Файлы</h5>
-                                        @if ($deal && array_key_exists('files', $deal->data_json))
-                                            @foreach ($deal->data_json['files'] as $index => $file)
-                                                @include('deal.file', [
-                                                    'index' => $index,
-                                                    'file' => $file,
-                                                    'deal' => $deal,
-                                                ])
-                                            @endforeach
-                                        @endif
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <span class="lead">Монеты</span>
+                    </div>
 
-                                        <div class="form-group">
-                                            <div class="custom-file">
-                                                <input type="file" class="custom-file-input" id="file" name="file">
-                                                <label class="custom-file-label" for="file">Файл</label>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <div class="card-body">
+                        <div class="row coins">
+                            <div class="col-md-12">
+                                @if ($deal && array_key_exists('coins', $deal->data_json))
+                                    @foreach ($deal->data_json['coins'] as $index => $coin)
+                                        @include('deal.coin', [
+                                            'index' => $index,
+                                            'coin' => $coin,
+                                        ])
+                                    @endforeach
+                                @else
+                                    @include('deal.coin', [
+                                        'index' => 0,
+                                        'coin' => [],
+                                    ])
+                                @endif
+
+                                <div class="form-group row">
+                                    <a href="javascript:void(0)" class="btn btn-link js-add-coin" role="button" tabindex="-1">{{ __('Добавить монету') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -104,9 +92,8 @@
                         @endif
                         <a href="{{ route('deal-index') }}" class="btn btn-light mr-3" role="button"><i class="icon-backward" aria-hidden="true"></i>&nbsp;&nbsp;{{ __('Отменить') }}</a>
                     </div>
-
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

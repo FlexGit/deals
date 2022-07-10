@@ -4,27 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * App\Models\Contractor
- *
- * @property int $id
- * @property string $name
- * @property array $data_json
- * @property int $created_by
- * @property int $updated_by
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @mixin \Eloquent
- */
-
-class Contractor extends Model {
+class Passport extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name',
+        'contractor_id',
+		'series',
+		'number',
+		'issue_date',
+		'issue_office',
+		'zipcode',
+		'region',
+		'city',
+		'street',
+		'house',
+		'appartment',
         'data_json',
 		'created_by',
 		'updated_by',
@@ -33,9 +30,10 @@ class Contractor extends Model {
 	protected $dates = [
 		'created_at',
 		'updated_at',
+		'issue_date',
 	];
-
-    /**
+	
+	/**
      * The attributes that should be cast to native types.
      *
      * @var array
@@ -43,13 +41,22 @@ class Contractor extends Model {
     protected $casts = [
 		'created_at' => 'datetime:Y-m-d H:i:s',
 		'updated_at' => 'datetime:Y-m-d H:i:s',
+		'issue_date' => 'datetime:Y-m-d',
 		'data_json' => 'array',
     ];
 	
-	public function passports()
+	public function contractor()
 	{
-		return $this->hasMany(Passport::class, 'contractor_id', 'id')
-			->orderByDesc('id')
-			->with(['createdBy', 'updatedBy']);
+		return $this->hasOne(Contractor::class, 'id', 'contractor_id');
+	}
+	
+	public function createdBy()
+	{
+		return $this->hasOne(User::class, 'id', 'created_by');
+	}
+	
+	public function updatedBy()
+	{
+		return $this->hasOne(User::class, 'id', 'updated_by');
 	}
 }

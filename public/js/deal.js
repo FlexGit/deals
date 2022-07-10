@@ -27,17 +27,33 @@ $(document).ready(function() {
 		type: 'POST',
 		dataType: 'json',
 		onSelect: function (suggestion) {
+			console.log(suggestion.data);
+
+			$.each(suggestion.data.passports, function (i, item) {
+				$('#passport-id').append($('<option>', {
+					value: item.id,
+					text : item.series + ' ' + item.number + ' от ' + item.issue_date + ' [создал ' + item.created_by.name + ' ' + moment(item.created_at).format('YYYY-MM-DD') + ', изменил ' + item.updated_by.name + ' ' + moment(item.updated_at).format('YYYY-MM-DD') + ']',
+				}));
+			});
+
+			$('#passport-id').val(suggestion.data.lastPassport.id);
+
 			$('#contractor-id').val(suggestion.id);
-			$('#passport-series').val(suggestion.data.passport_series);
-			$('#passport-number').val(suggestion.data.passport_number);
-			$('#passport-date').val(suggestion.data.passport_date);
-			$('#passport-office').val(suggestion.data.passport_office);
-			$('#passport-address').val(suggestion.data.passport_address);
-			if (suggestion.data.passport_file_1) {
-				$('#passport-file-1').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + suggestion.data.passport_file_1.ext + '/' + suggestion.data.passport_file_1.name +'">Открыть файл</a>');
+			$('#passport-series').val(suggestion.data.lastPassport.series);
+			$('#passport-number').val(suggestion.data.lastPassport.number);
+			$('#passport-date').val(suggestion.data.lastPassport.issue_date);
+			$('#passport-office').val(suggestion.data.lastPassport.issue_office);
+			$('#passport-zipcode').val(suggestion.data.lastPassport.zipcode);
+			$('#passport-region').val(suggestion.data.lastPassport.region);
+			$('#passport-city').val(suggestion.data.lastPassport.city);
+			$('#passport-street').val(suggestion.data.lastPassport.street);
+			$('#passport-house').val(suggestion.data.lastPassport.house);
+			$('#passport-appartment').val(suggestion.data.lastPassport.appartment);
+			if (suggestion.data.lastPassport.data_json.passport_file_1) {
+				$('#passport-file-1').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + suggestion.data.lastPassport.data_json.passport_file_1.ext + '/' + suggestion.data.lastPassport.data_json.passport_file_1.name +'">Открыть файл</a>');
 			}
-			if (suggestion.data.passport_file_2) {
-				$('#passport-file-2').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + suggestion.data.passport_file_2.ext + '/' + suggestion.data.passport_file_2.name + '">Открыть файл</a>');
+			if (suggestion.data.lastPassport.data_json.passport_file_2) {
+				$('#passport-file-2').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + suggestion.data.lastPassport.data_json.passport_file_2.ext + '/' + suggestion.data.lastPassport.data_json.passport_file_2.name + '">Открыть файл</a>');
 			}
 		}
 	}).keyup(function() {
@@ -47,6 +63,47 @@ $(document).ready(function() {
 			$('#passport-file-1').next('.custom-file-label').text('Первая страница паспорта');
 			$('#passport-file-2').next('.custom-file-label').text('Вторая страница паспорта');
 		}
+	});
+
+	$(document).on('change', '#passport-id', function() {
+		var passportId = $(this).val();
+		if (!passportId) return;
+
+		$.ajax({
+			type: 'GET',
+			url: '/contractor/' + $('#contractor-id').val() + '/passport/' + $(this).val(),
+			dataType: 'json',
+			async: true,
+			cache: false,
+			global: false,
+			success: function(D) {
+				console.log(D);
+				if (D.status !== 'success') {
+					toastr.error("", D.reason ? D.reason : 'Ошибка, попробуйте повторить операцию позже');
+					return;
+				}
+
+				$('#passport-series').val(D.passport.series);
+				$('#passport-number').val(D.passport.number);
+				$('#passport-date').val(D.passport.issue_date);
+				$('#passport-office').val(D.passport.issue_office);
+				$('#passport-zipcode').val(D.passport.zipcode);
+				$('#passport-region').val(D.passport.region);
+				$('#passport-city').val(D.passport.city);
+				$('#passport-street').val(D.passport.street);
+				$('#passport-house').val(D.passport.house);
+				$('#passport-appartment').val(D.passport.appartment);
+				if (D.passport.data_json.passport_file_1) {
+					$('#passport-file-1').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + D.passport.data_json.passport_file_1.ext + '/' + D.passport.data_json.passport_file_1.name +'">Открыть файл</a>');
+				}
+				if (D.passport.data_json.passport_file_2) {
+					$('#passport-file-2').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + D.passport.data_json.passport_file_2.ext + '/' + D.passport.data_json.passport_file_2.name + '">Открыть файл</a>');
+				}
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				toastr.error("", errorThrown.length ? errorThrown : 'Ошибка, попробуйте повторить операцию позже');
+			}
+		});
 	});
 
 	// Монеты
@@ -346,6 +403,12 @@ $(document).ready(function() {
 			sum = quantity * price;
 
 		$coinContainer.find('.js-coin-sum').val(sum ? sum : '');
+	});
+
+	$(document).on('keyup', '#passport-series, #passport-number, #passport-date, #passport-office, #passport-file-1, #passport-file-2, #passport-zipcode, #passport-region, #passport-city, #passport-street, #passport-house, #passport-apartment', function() {
+		if ($('#contractor-id').val().length) {
+			$('label[for="is-new-passport-version"]').closest('.row').removeClass('hidden');
+		}
 	});
 
 	function getDealList(contractorName) {
