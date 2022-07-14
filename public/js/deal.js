@@ -229,6 +229,59 @@ $(document).ready(function() {
 		});
 	});
 
+	// Чеканка
+	var coinage = [
+		{ value: 'Austrian Mint' },
+		{ value: 'British Royal Mint' },
+		{ value: 'Canadian Royal Mint' },
+		{ value: 'CIT' },
+		{ value: 'LEV Germany' },
+		{ value: 'Mayer Mint' },
+		{ value: 'Mennica Polska' },
+		{ value: 'Mint of Poland' },
+		{ value: 'PAMP SA' },
+		{ value: 'Perth Mint' },
+		{ value: 'Royal Mint' },
+		{ value: 'Royal Mint UK' },
+		{ value: 'South African Mint' },
+		{ value: 'Star of David' },
+		{ value: 'The Perth Mint' },
+		{ value: 'US Mint' },
+		{ value: 'US West Point Mint' },
+		{ value: 'Valcambi Swiss' },
+		{ value: 'Б.Х. Майерс Кунстпрегеанштальт' },
+		{ value: 'Казахстанский монетный двор' },
+		{ value: 'Китайский Монетный Двор' },
+		{ value: 'Королевский монетный двор Нидерландов' },
+		{ value: 'Литовский монетный двор' },
+		{ value: 'ММД' },
+		{ value: 'Монетный двор Мехико' },
+		{ value: 'Монетный двор Финляндии' },
+		{ value: 'Польский монетный двор' },
+		{ value: 'СПМД' },
+		{ value: 'СПМД / ММД' },
+		{ value: 'СССР' },
+		{ value: 'Шанхайский Монетный Двор' },
+		{ value: 'Швейцария' },
+		{ value: 'Швейцарский монетный двор' },
+		{ value: 'Южноафриканский монетный двор' }
+	];
+	$(document).on('focus', '.js-coin-coinage', function() {
+		if ($(this).autocomplete() !== undefined) return;
+
+		$(this).autocomplete({
+			lookup: coinage,
+			minChars: 0,
+			showNoSuggestionNotice: true,
+			noSuggestionNotice: 'Ничего не найдено',
+			onSelect: function (suggestion) {
+				var $coinContainer = $(this).closest('.coin-container');
+
+				$coinContainer.find('.js-coin-coinage').val(suggestion.value);
+			}
+		});
+	});
+
 	// Файлы контрагента
 	$(document).on('change', '.custom-file-input', function() {
 		$(this).next('.custom-file-label').text(this.files[0].name);
