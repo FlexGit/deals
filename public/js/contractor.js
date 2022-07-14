@@ -77,7 +77,7 @@ $(document).ready(function() {
 					toastr.error("", D.reason ? D.reason : 'Ошибка, попробуйте повторить операцию позже');
 					return;
 				}
-				toastr.success("", "Контрагент #" + D.name + " успешно удален");
+				toastr.success("", "Контрагент " + D.name + " успешно удален");
 				setTimeout(function () {
 					window.location.href = '/contractors';
 				}, 1500);
@@ -151,7 +151,7 @@ $(document).ready(function() {
 					return;
 				}
 
-				toastr.success("", "Контрагент #" + D.name + " успешно сохранен");
+				toastr.success("", "Контрагент " + D.name + " успешно сохранен");
 				setTimeout(function () {
 					window.location.href = '/contractors';
 				}, 1500);

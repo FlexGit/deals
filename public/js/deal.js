@@ -282,6 +282,53 @@ $(document).ready(function() {
 		});
 	});
 
+	// Веса металлов
+	var metalWeights = [
+		{ value: '1.55' },
+		{ value: '3.11' },
+		{ value: '3.89' },
+		{ value: '7.2' },
+		{ value: '7.32' },
+		{ value: '7.74' },
+		{ value: '7.78' },
+		{ value: '7.89' },
+		{ value: '9.99' },
+		{ value: '15.55' },
+		{ value: '20.35' },
+		{ value: '23.30' },
+		{ value: '26.16' },
+		{ value: '28.28' },
+		{ value: '28.77' },
+		{ value: '30.0' },
+		{ value: '31.1' },
+		{ value: '31.3' },
+		{ value: '37.5' },
+		{ value: '62.2' },
+		{ value: '84.84' },
+		{ value: '93.3' },
+		{ value: '124.4' },
+		{ value: '155.5' },
+		{ value: '311' },
+		{ value: '1000' },
+		{ value: '3000' },
+		{ value: '5000' },
+	];
+	$(document).on('focus', '.js-coin-metal-weight', function() {
+		if ($(this).autocomplete() !== undefined) return;
+
+		$(this).autocomplete({
+			lookup: metalWeights,
+			minChars: 0,
+			showNoSuggestionNotice: true,
+			noSuggestionNotice: 'Ничего не найдено',
+			onSelect: function (suggestion) {
+				var $coinContainer = $(this).closest('.coin-container');
+
+				$coinContainer.find('.js-coin-metal-weight').val(suggestion.value);
+			}
+		});
+	});
+
 	// Файлы контрагента
 	$(document).on('change', '.custom-file-input', function() {
 		$(this).next('.custom-file-label').text(this.files[0].name);
