@@ -16,13 +16,15 @@
     <script src="{{ asset('js/jquery.autocomplete.min.js') }}" defer></script>
     <script src="{{ asset('js/moment.min.js') }}" defer></script>
     <script src="{{ asset('js/moment-with-locales.min.js') }}" defer></script>
-    <script src="{{ asset('js/common.js') }}" defer></script>
+    <script src="{{ asset('js/common.js?v=' . time()) }}" defer></script>
     @if(Route::is('deal-index') || Route::is('deal-edit'))
         <script src="{{ asset('js/deal.js?v=' . time()) }}" defer></script>
-    @elseif(Route::is('contractor-index') || Route::is('contractor-edit'))
+    @elseif(Route::is('contractor-index') || Route::is('contractor-edit') || Route::is('passport-edit'))
         <script src="{{ asset('js/contractor.js?v=' . time()) }}" defer></script>
     @elseif(Route::is('coin-index') || Route::is('coin-edit'))
         <script src="{{ asset('js/coin.js?v=' . time()) }}" defer></script>
+    @elseif(Route::is('legal-entity-index') || Route::is('legal-entity-edit'))
+        <script src="{{ asset('js/legal-entity.js?v=' . time()) }}" defer></script>
     @endif
 
     <!-- Fonts -->
@@ -33,15 +35,15 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/vendor/toastr/toastr.min.css') }}" rel="stylesheet">
     {{--<link href="{{ asset('css/bootstrap-datepicker3.min.css') }}" rel="stylesheet">--}}
-    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-    <link href="{{ asset('css/common.css?v=1') }}" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+    <link href="{{ asset('css/common.css?v=' . time()) }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Сделки') }}
+                    <i class="fa-solid fa-handshake"></i>&nbsp;&nbsp;{{ config('app.name', 'Сделки') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -68,30 +70,39 @@
                                 </li>
                             @endif
                         @else
+                            <li class="nav-item pr-5">
+                                <a class="nav-link" href="{{ route('deal-index') }}">
+                                    <i class="fa-solid fa-handshake"></i>&nbsp;&nbsp;{{ __('Сделки') }}
+                                </a>
+                            </li>
+
                             <li class="nav-item dropdown pr-5">
                                 <a id="navbarDropdownHelper" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ __('Справочники') }}
+                                    <i class="fa-solid fa-list"></i>&nbsp;&nbsp;{{ __('Справочники') }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownHelper">
                                     <a class="dropdown-item" href="{{ route('contractor-index') }}">
-                                        {{ __('Контрагенты') }}
+                                        <i class="fa-solid fa-user-tie"></i>&nbsp;&nbsp;{{ __('Контрагенты') }}
                                     </a>
                                     <a class="dropdown-item" href="{{ route('coin-index') }}">
-                                        {{ __('Монеты') }}
+                                        <i class="fa-solid fa-coins"></i>&nbsp;&nbsp;{{ __('Монеты') }}
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('legal-entity-index') }}">
+                                        <i class="fa-regular fa-registered"></i>&nbsp;&nbsp;{{ __('Юридические лица') }}
                                     </a>
                                 </div>
                             </li>
 
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
+                                    <i class="fa-solid fa-user"></i>&nbsp;&nbsp;{{ Auth::user()->name }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-                                        {{ __('Выход') }}
+                                        <i class="fa-solid fa-arrow-right-from-bracket"></i>&nbsp;&nbsp;{{ __('Выход') }}
                                     </a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

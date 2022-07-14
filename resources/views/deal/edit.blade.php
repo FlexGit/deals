@@ -13,15 +13,19 @@
                         <span class="lead">{{ $deal ? __('Сделка #' . $deal->id . ' от ' . $deal->deal_date->format('d.m.Y')) : __('Новая сделка') }}</span>
                         @if($deal)
                             <div>
-                                <a href="/deal/{{ $deal->id }}/print/specification" class="btn btn-light btn-sm border border-secondary" role="button" target="_blank"><i class="icon-print" aria-hidden="true"></i>&nbsp;&nbsp;Спецификация</a>
-                                <a href="javascript:void(0)" class="btn btn-light btn-sm border border-secondary" role="button"><i class="icon-print" aria-hidden="true"></i>&nbsp;&nbsp;Анкета</a>
+                                <a href="/deal/{{ $deal->id }}/print/specification" class="btn btn-light btn-sm border border-secondary" role="button" target="_blank">
+                                    <i class="fa-solid fa-print"></i>&nbsp;&nbsp;Спецификация
+                                </a>
+                                <a href="javascript:void(0)" class="btn btn-light btn-sm border border-secondary" role="button">
+                                    <i class="fa-solid fa-print"></i>&nbsp;&nbsp;Анкета
+                                </a>
                             </div>
                         @endif
                     </div>
 
                     <div class="card-body">
                         <div class="form-group row">
-                            <div class="col-md-3 vertical-align-middle">
+                            <div class="col-md-2 vertical-align-middle">
                                 <label for="deal-date" class="font-weight-bold">Тип сделки</label>
                                 <div>
                                     <div class="custom-control custom-radio custom-control-inline" style="margin-top: 0.5rem;">
@@ -34,9 +38,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="deal-date" class="font-weight-bold">Дата сделки</label>
                                 <input id="deal-date" type="date" class="form-control" name="deal-date" value="{{ $deal ? $deal->deal_date->format('Y-m-d') : date('Y-m-d') }}" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="deal-legal-entity-id" class="font-weight-bold">Юридическое лицо</label>
+                                <select id="deal-legal-entity-id" name="deal-legal-entity-id" class="form-control" required>
+                                    <option></option>
+                                    @foreach($legalEntities as $legalEntity)
+                                        <option value="{{ $legalEntity->id }}" @if($deal && $legalEntity->id == $deal->legal_entity_id) selected @endif>{{ $legalEntity->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -75,8 +88,10 @@
                                     ])
                                 @endif
 
-                                <div class="form-group row">
-                                    <a href="javascript:void(0)" class="btn btn-link js-add-coin" role="button" tabindex="-1">{{ __('Добавить монету') }}</a>
+                                <div class="form-group text-right">
+                                    <a href="javascript:void(0)" class="btn btn-info js-add-coin" role="button" tabindex="-1">
+                                        <i class="fa-solid fa-plus"></i>&nbsp;&nbsp;{{ __('Добавить монету') }}
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -84,13 +99,16 @@
 
                     <div class="card-footer d-flex justify-content-end">
                         <button type="submit" class="btn btn-success mr-1 js-submit-deal">
-                            <i class="icon-save" aria-hidden="true"></i>&nbsp;&nbsp;
-                            {{ __('Сохранить') }}
+                            <i class="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;{{ __('Сохранить') }}
                         </button>
                         @if ($deal)
-                            <a href="javascript:void(0)" data-action-url="/deal/{{ $deal->id }}" class="btn btn-danger mr-1 js-delete-deal" role="button"><i class="icon-remove" aria-hidden="true"></i>&nbsp;&nbsp;{{ __('Удалить') }}</a>
+                            <a href="javascript:void(0)" data-action-url="/deal/{{ $deal->id }}" class="btn btn-danger mr-1 js-delete-deal" role="button">
+                                <i class="fa-regular fa-trash-can"></i>&nbsp;&nbsp;{{ __('Удалить') }}
+                            </a>
                         @endif
-                        <a href="{{ route('deal-index') }}" class="btn btn-light mr-3" role="button"><i class="icon-backward" aria-hidden="true"></i>&nbsp;&nbsp;{{ __('Отменить') }}</a>
+                        <a href="{{ route('deal-index') }}" class="btn btn-light mr-3" role="button">
+                            <i class="fa-solid fa-backward-step"></i>&nbsp;&nbsp;{{ __('Отменить') }}
+                        </a>
                     </div>
                 </div>
             </form>

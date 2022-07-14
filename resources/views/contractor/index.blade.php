@@ -8,17 +8,27 @@
 					<div class="card-header d-flex justify-content-md-between">
 						<span class="lead mt-1">{{ __('Контрагенты') }}</span>
 						<div>
-							<a href="{{ route('contractor-edit') }}" class="btn btn-info" role="button"><i class="icon-plus" aria-hidden="true"></i>&nbsp;&nbsp;Новый контрагент</a>
+							<a href="{{ route('contractor-edit') }}" class="btn btn-info" role="button"><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;Новый контрагент</a>
 						</div>
 					</div>
 					<div class="card-body">
-						<div class="form-group row d-flex justify-content-start">
-							<span class="col-md-1 font-weight-bold pt-2">Поиск: </span>
-							<div class="col-md-4">
-								<input id="search-contractor-name" type="text" class="form-control" name="search-contractor-name" data-source-url="{{ route('contractor-search') }}" placeholder="ФИО">
+						<div class="row">
+							<div class="form-group col-md-4">
+								<label for="filter-contractor">Контрагент</label>
+								<input class="form-control" id="filter-contractor" type="text" name="filter-contractor" value="{{ $filterContractor ?? '' }}" placeholder="ФИО">
 							</div>
 						</div>
-						<div class="js-contractor-list" data-action="{{ route('contractor-list') }}"></div>
+						<table id="contractorTable" class="table table-sm table-striped table-hover" data-action="{{ route('contractor-list') }}">
+							<thead>
+							<tr>
+								<th class="text-center border-right" scope="col">#</th>
+								<th class="text-center border-right" scope="col" colspan="2">ФИО</th>
+								<th class="text-center border-right" scope="col">Паспортные данные</th>
+							</tr>
+							</thead>
+							<tbody class="body">
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>

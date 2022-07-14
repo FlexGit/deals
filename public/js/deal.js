@@ -1,22 +1,4 @@
 $(document).ready(function() {
-	// Контрагенты в списке сделок
-	var $searchContractor = $('#search-contractor-name');
-	$searchContractor.autocomplete({
-		serviceUrl: $searchContractor.data('source-url'),
-		minChars: 1,
-		showNoSuggestionNotice: true,
-		noSuggestionNotice: 'Ничего не найдено',
-		type: 'POST',
-		dataType: 'json',
-		onSelect: function (suggestion) {
-			getDealList(suggestion.value);
-		}
-	}).keyup(function() {
-		if (!$(this).val().length) {
-			getDealList(null);
-		}
-	});
-
 	// Контрагенты в карточке сделки
 	var $contractor = $('#contractor-name');
 	$contractor.autocomplete({
@@ -27,16 +9,19 @@ $(document).ready(function() {
 		type: 'POST',
 		dataType: 'json',
 		onSelect: function (suggestion) {
-			console.log(suggestion.data);
+			//console.log(suggestion.data);
+
+			var $passport = $('#passport-id');
+			$passport.val('').html('');
 
 			$.each(suggestion.data.passports, function (i, item) {
-				$('#passport-id').append($('<option>', {
+				$passport.append($('<option>', {
 					value: item.id,
 					text : item.series + ' ' + item.number + ' от ' + item.issue_date + ' [создал ' + item.created_by.name + ' ' + moment(item.created_at).format('YYYY-MM-DD') + ', изменил ' + item.updated_by.name + ' ' + moment(item.updated_at).format('YYYY-MM-DD') + ']',
 				}));
 			});
 
-			$('#passport-id').val(suggestion.data.lastPassport.id);
+			$passport.val(suggestion.data.lastPassport.id);
 
 			$('#contractor-id').val(suggestion.id);
 			$('#passport-series').val(suggestion.data.lastPassport.series);
@@ -48,7 +33,7 @@ $(document).ready(function() {
 			$('#passport-city').val(suggestion.data.lastPassport.city);
 			$('#passport-street').val(suggestion.data.lastPassport.street);
 			$('#passport-house').val(suggestion.data.lastPassport.house);
-			$('#passport-appartment').val(suggestion.data.lastPassport.appartment);
+			$('#passport-apartment').val(suggestion.data.lastPassport.apartment);
 			if (suggestion.data.lastPassport.data_json.passport_file_1) {
 				$('#passport-file-1').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + suggestion.data.lastPassport.data_json.passport_file_1.ext + '/' + suggestion.data.lastPassport.data_json.passport_file_1.name +'">Открыть файл</a>');
 			}
@@ -71,7 +56,7 @@ $(document).ready(function() {
 
 		$.ajax({
 			type: 'GET',
-			url: '/contractor/' + $('#contractor-id').val() + '/passport/' + $(this).val(),
+			url: '/contractor/' + $('#contractor-id').val() + '/passport/' + $(this).val() + '/get',
 			dataType: 'json',
 			async: true,
 			cache: false,
@@ -92,18 +77,38 @@ $(document).ready(function() {
 				$('#passport-city').val(D.passport.city);
 				$('#passport-street').val(D.passport.street);
 				$('#passport-house').val(D.passport.house);
-				$('#passport-appartment').val(D.passport.appartment);
+				$('#passport-apartment').val(D.passport.apartment);
 				if (D.passport.data_json.passport_file_1) {
-					$('#passport-file-1').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + D.passport.data_json.passport_file_1.ext + '/' + D.passport.data_json.passport_file_1.name +'">Открыть файл</a>');
+					$('#passport-file-1').next('label').text(D.passport.data_json.passport_file_1.name + '.' + D.passport.data_json.passport_file_1.ext);
+					$('#passport-file-1').closest('.passport-container').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/contractor/' + D.passport.contractor_id + '/passport/' + D.passport.data_json.passport_file_1.ext + '/' + D.passport.data_json.passport_file_1.name +'">Открыть файл</a>');
 				}
 				if (D.passport.data_json.passport_file_2) {
-					$('#passport-file-2').closest('.form-group').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/passport/' + D.passport.data_json.passport_file_2.ext + '/' + D.passport.data_json.passport_file_2.name + '">Открыть файл</a>');
+					$('#passport-file-2').next('label').text(D.passport.data_json.passport_file_2.name + '.' + D.passport.data_json.passport_file_2.ext);
+					$('#passport-file-2').closest('.passport-container').find('.preview-file').html('<a href="javascript:void(0)" class="js-get-file" data-path="/contractor/' + D.passport.contractor_id + '/passport/' + D.passport.data_json.passport_file_2.ext + '/' + D.passport.data_json.passport_file_2.name + '">Открыть файл</a>');
 				}
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
 				toastr.error("", errorThrown.length ? errorThrown : 'Ошибка, попробуйте повторить операцию позже');
 			}
 		});
+	});
+
+	$(document).on('change', '#filter-period, #filter-period-from, #filter-period-to, #filter-deal-type', function() {
+		getDealList(false);
+	});
+
+	$(document).on('keyup', '#filter-contractor', function() {
+		getDealList(false);
+	});
+
+	$(document).on('change', '#filter-period', function() {
+		var $container = $('.filter-period-other-container');
+
+		if ($(this).val() === 'other') {
+			$container.removeClass('hidden');
+		} else {
+			$container.addClass('hidden');
+		}
 	});
 
 	// Монеты
@@ -259,19 +264,10 @@ $(document).ready(function() {
 					return;
 				}
 
-				/*$form.find('input').each(function() {
-					$(this).val('');
-				});
-				$form.find('.preview-file').each(function() {
-					$(this).text('');
-				});
-				$('#passport-file-1').next('.custom-file-label').text('Первая страница паспорта');
-				$('#passport-file-2').next('.custom-file-label').text('Вторая страница паспорта');*/
-
 				toastr.success("", "Сделка #" + D.deal_id + " успешно сохранена");
-				console.log(D);
+				//console.log(D);
 				setTimeout(function () {
-					window.location.href = '/deal/' + D.deal_id;
+					window.location.href = '/';
 				}, 1500);
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
@@ -405,17 +401,30 @@ $(document).ready(function() {
 		$coinContainer.find('.js-coin-sum').val(sum ? sum : '');
 	});
 
-	$(document).on('keyup', '#passport-series, #passport-number, #passport-date, #passport-office, #passport-file-1, #passport-file-2, #passport-zipcode, #passport-region, #passport-city, #passport-street, #passport-house, #passport-apartment', function() {
+	/*$(document).on('keyup', '#passport-series, #passport-number, #passport-date, #passport-office, #passport-file-1, #passport-file-2, #passport-zipcode, #passport-region, #passport-city, #passport-street, #passport-house, #passport-apartment', function() {
 		if ($('#contractor-id').val().length) {
 			$('label[for="is-new-passport-version"]').closest('.row').removeClass('hidden');
 		}
-	});
+	});*/
 
-	function getDealList(contractorName) {
+	function getDealList(loadMore) {
+		var $table = $('#dealTable'),
+			$tbody = $table.find('tbody.body');
+
+		var $tr = $('tr.odd[data-id]:last'),
+			id = (loadMore && $tr.length) ? $tr.data('id') : 0;
+
 		$.ajax({
 			type: 'GET',
-			url: $('.js-deal-list').data('action'),
-			data: { contractor: contractorName },
+			url: $table.data('action'),
+			data: {
+				"filter-contractor": $('#filter-contractor').val(),
+				"filter-period": $('#filter-period').val(),
+				"filter-period-from": $('#filter-period-from').val(),
+				"filter-period-to": $('#filter-period-to').val(),
+				"filter-deal-type": $('#filter-deal-type').val(),
+				"id": id,
+			},
 			dataType: 'json',
 			async: true,
 			cache: false,
@@ -427,10 +436,18 @@ $(document).ready(function() {
 					return;
 				}
 
-				$('.js-deal-list tbody').html(D.html);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				toastr.error("", errorThrown.length ? errorThrown : 'Ошибка, попробуйте повторить операцию позже');
+				if (D.html) {
+					if (loadMore) {
+						$tbody.append(D.html);
+					} else {
+						$tbody.html(D.html);
+					}
+					$(window).data('ajaxready', true);
+				} else {
+					if (!id) {
+						$tbody.html('<tr><td colspan="30" class="text-center">Ничего не найдено</td></tr>');
+					}
+				}
 			}
 		});
 	}
@@ -443,5 +460,17 @@ $(document).ready(function() {
 		});
 	}
 
-	getDealList(null);
+	getDealList(false);
+
+	$(window).on('scroll', function() {
+		if ($(window).data('ajaxready') === false) return;
+
+		var $tr = $('tr.odd[data-id]:last');
+		if (!$tr.length) return;
+
+		if ($tr.isInViewport()) {
+			$(window).data('ajaxready', false);
+			getDealList(true);
+		}
+	});
 });

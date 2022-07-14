@@ -1,27 +1,4 @@
 $(document).ready(function() {
-	// Монеты в списке
-	var $searchCoin = $('#search-coin-name');
-	$searchCoin.autocomplete({
-		serviceUrl: $searchCoin.data('source-url'),
-		minChars: 1,
-		showNoSuggestionNotice: true,
-		noSuggestionNotice: 'Ничего не найдено',
-		type: 'POST',
-		dataType: 'json',
-		onSelect: function (suggestion) {
-			getCoinList(1, suggestion.value);
-		}
-	}).keyup(function() {
-		if (!$(this).val().length) {
-			getCoinList(1,null);
-		}
-	});
-
-	$(document).on('click', '.pagination a', function(e){
-		e.preventDefault();
-		getCoinList($(this).attr('href').split('page=')[1], $('#search-coin-name').val());
-	});
-
 	// Металлы
 	var metals = [
 		{ value: 'Золото' },
@@ -160,14 +137,24 @@ $(document).ready(function() {
 		});
 	});
 
-	function getCoinList(page, coinName) {
-		var $list = $('.js-coin-list');
-		if (!$list.length) return;
+	$(document).on('keyup', '#filter-coin', function() {
+		getCoinList(false);
+	});
+
+	function getCoinList(loadMore) {
+		var $table = $('#coinTable'),
+			$tbody = $table.find('tbody.body');
+
+		var $tr = $('tr.odd[data-id]:last'),
+			id = (loadMore && $tr.length) ? $tr.data('id') : 0;
 
 		$.ajax({
 			type: 'GET',
-			url: $list.data('action'),
-			data: { page: page, coin: coinName },
+			url: $table.data('action'),
+			data: {
+				"filter-coin": $('#filter-coin').val(),
+				"id": id,
+			},
 			dataType: 'json',
 			async: true,
 			cache: false,
@@ -179,10 +166,18 @@ $(document).ready(function() {
 					return;
 				}
 
-				$('.js-coin-list').html(D.html);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				toastr.error("", errorThrown.length ? errorThrown : 'Ошибка, попробуйте повторить операцию позже');
+				if (D.html) {
+					if (loadMore) {
+						$tbody.append(D.html);
+					} else {
+						$tbody.html(D.html);
+					}
+					$(window).data('ajaxready', true);
+				} else {
+					if (!id) {
+						$tbody.html('<tr><td colspan="30" class="text-center">Ничего не найдено</td></tr>');
+					}
+				}
 			}
 		});
 	}
@@ -211,7 +206,7 @@ $(document).ready(function() {
 					toastr.error("", D.reason ? D.reason : 'Ошибка, попробуйте повторить операцию позже');
 					return;
 				}
-				toastr.success("", "Монета #" + D.coin_id + " успешно удалена");
+				toastr.success("", "Монета #" + D.coin_name + " успешно удалена");
 				setTimeout(function () {
 					window.location.href = '/coins';
 				}, 1500);
@@ -249,7 +244,7 @@ $(document).ready(function() {
 					return;
 				}
 
-				toastr.success("", "Монета #" + D.coin_id + " успешно сохранена");
+				toastr.success("", "Монета #" + D.coin_name + " успешно сохранена");
 				setTimeout(function () {
 					window.location.href = '/coins';
 				}, 1500);
@@ -261,5 +256,17 @@ $(document).ready(function() {
 		});
 	});
 
-	getCoinList(1,null);
+	getCoinList(false);
+
+	$(window).on('scroll', function() {
+		if ($(window).data('ajaxready') === false) return;
+
+		var $tr = $('tr.odd[data-id]:last');
+		if (!$tr.length) return;
+
+		if ($tr.isInViewport()) {
+			$(window).data('ajaxready', false);
+			getCoinList(true);
+		}
+	});
 });

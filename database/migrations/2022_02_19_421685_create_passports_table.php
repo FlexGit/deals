@@ -18,12 +18,12 @@ class CreatePassportsTable extends Migration {
 			$table->string('number', 25)->nullable();
 			$table->date('issue_date')->nullable();
 			$table->string('issue_office')->nullable();
-			$table->integer('zipcode')->default(0);
+			$table->string('zipcode', 25)->nullable();
 			$table->string('region')->nullable();
 			$table->string('city')->nullable();
 			$table->string('street')->nullable();
 			$table->string('house', 25)->nullable();
-			$table->string('appartment', 25)->nullable();
+			$table->string('apartment', 25)->nullable();
 			$table->text('data_json')->nullable();
 			$table->integer('created_by')->default(0)->index();
 			$table->integer('updated_by')->default(0)->index();

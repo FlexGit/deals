@@ -15,6 +15,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Passport[] $passports
+ * @property-read int|null $passports_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Contractor newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contractor newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contractor query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contractor whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contractor whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contractor whereDataJson($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contractor whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contractor whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contractor whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contractor whereUpdatedBy($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Deal[] $deals
+ * @property-read int|null $deals_count
  */
 
 class Contractor extends Model {
@@ -46,9 +60,26 @@ class Contractor extends Model {
 		'data_json' => 'array',
     ];
 	
+	CONST LIST_LIMIT = 20;
+	
+	public static function boot() {
+		parent::boot();
+		
+		Contractor::deleting(function(Contractor $contractor) {
+			$contractor->passports()->delete();
+		});
+	}
+	
 	public function passports()
 	{
 		return $this->hasMany(Passport::class, 'contractor_id', 'id')
+			->orderByDesc('id')
+			->with(['createdBy', 'updatedBy']);
+	}
+	
+	public function deals()
+	{
+		return $this->hasMany(Deal::class, 'contractor_id', 'id')
 			->orderByDesc('id')
 			->with(['createdBy', 'updatedBy']);
 	}

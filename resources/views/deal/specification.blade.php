@@ -1,35 +1,37 @@
 @php
 	$data = $deal->data_json;
-	$contractor = $data['contractor'] ?: [];
-	$coins = $data['coins'] ?: [];
-	$sum = 0;
+	$contractor = (isset($data['contractor']) && $data['contractor']) ? $data['contractor'] : [];
+	$passport = $deal->passport ?? null;
+	$legalEntity = $deal->legalEntity ?? null;
+	$coins = $data['coins'] ?? [];
+	$sumAmount = 0;
 
 	$clientRequisites = '
-		<span class="font-weight-bold">' . $contractor['name'] . '</span>
+		<span class="font-weight-bold">' . ($contractor ? $contractor['name'] : '') . '</span>
 		<br><br>
-		<span class="font-weight-bold">Паспорт: </span> <span>' . $contractor['passport_series'] . ' ' . $contractor['passport_number'] . ', ' . $contractor['passport_date'] . ', ' . $contractor['passport_office'] . '</span>
+		<span class="font-weight-bold">Паспорт: </span> <span>' . ($passport ? ($passport->series . ' ' . $passport->number . ', ' . ($passport->issue_date ? $passport->issue_date->format('d.m.Y') : '') . ', ' . $passport->issue_office) : '') . '</span>
 		<br><br>
-		<span class="font-weight-bold">Адрес регистрации: </span> <span>' . $contractor['passport_address'] . '</span>';
+		<span class="font-weight-bold">Адрес регистрации: </span> <span>' . ($passport ? ($passport->zipcode . ', ' . $passport->region . ', ' . $passport->city . ', ' . $passport->street . ', ' . ($passport->house ? 'д. ' . $passport->house : '') . ', ' . ($passport->apartment ? 'кв. ' . $passport->apartment : '')) : '') . '</span>';
 
 	$companyRequisites = '
-		<span class="font-weight-bold">ООО «Золотой запас»</span>
+		<span class="font-weight-bold">' . ($legalEntity ? $legalEntity->name : '') . '</span>
 		<br>
-		<span>ИНН 7717663741 / КПП 771701001</span>
+		<span>ИНН ' . ($legalEntity ? $legalEntity->inn : '') . ' / КПП ' . ($legalEntity ? $legalEntity->kpp : '') . '</span>
 		<br>
-		<span>ОГРН 1097746761200</span>
+		<span>ОГРН ' . ($legalEntity ? $legalEntity->ogrn : '') . '</span>
 		<br><br>
-		<span>ПАО «Сбербанк России», Москва</span>
+		<span>' . ($legalEntity ? $legalEntity->bank : '') . '</span>
 		<br>
-		<span>Р/С: № 40702810238000255271</span>
+		<span>Р/С: № ' . ($legalEntity ? $legalEntity->rs : '') . '</span>
 		<br>
-		<span>К/С: № 30101.810.4.00000000225</span>
+		<span>К/С: № ' . ($legalEntity ? $legalEntity->ks : '') . '</span>
 		<br>
-		<span>БИК 044525225</span>
+		<span>БИК ' . ($legalEntity ? $legalEntity->bik : '') .'</span>
 		<br><br>
 		<span class="font-weight-bold">Юридический адрес: </span>
-		<span>129626, г. Москва, Проспект Мира, д.104, этаж 4, комната 5.</span>
+		<span>' . ($legalEntity ? $legalEntity->address : '') . '</span>
 		<br><br>
-		<span class="font-weight-bold">Генеральный директор ООО «Золотой запас»</span>';
+		<span class="font-weight-bold">Генеральный директор ' . ($legalEntity ? $legalEntity->name : '') . '</span>';
 @endphp
 
 @extends('layouts.print')
@@ -38,7 +40,7 @@
 	<div>
 		<h4 class="mb-3 text-center">ПРИЕМО ПЕРЕДАТОЧНЫЙ АКТ<br>КУПЛИ-ПРОДАЖИ МОНЕТ</h4>
 
-		Настоящий Акт составлен в соответствии с Правилами оказания услуг опубликованном по адресу: <a href="https://www.zolotoy-zapas.ru/" target="_blank">https://www.zolotoy-zapas.ru/</a> об общих условиях совершения сделок с монетами из драгоценных металлов (с юридическими лицами, индивидуальными предпринимателями и физическими лицами, занимающимися в установленном законодательством Российской Федерации порядке частной практикой) № 06-М/11/16 от 18 ноября 2016 г. (далее – Правила).
+		Настоящий Акт составлен в соответствии с Правилами оказания услуг опубликованном по адресу: <a href="https://www.zolotoy-zapas.ru" target="_blank">https://www.zolotoy-zapas.ru</a> об общих условиях совершения сделок с монетами из драгоценных металлов (с юридическими лицами, индивидуальными предпринимателями и физическими лицами, занимающимися в установленном законодательством Российской Федерации порядке частной практикой) № 06-М/11/16 от 18 ноября 2016 г. (далее – Правила).
 		<br>
 		Все термины, используемые в настоящем Акте, имеют значение, указанное в Правилах.
 		<br>
@@ -75,6 +77,7 @@
 			</thead>
 			<tbody>
 				@foreach ($coins as $index => $coin)
+					@php($amount = $coin['price'] * $coin['quantity'])
 					<tr>
 						<td>{{ ($index + 1) }}</td>
 						<td>{{ $coin['name'] }}{{ $coin['country'] ? ', ' . $coin['country'] : '' }}{{ $coin['year'] ? ', ' . $coin['year'] : '' }}</td>
@@ -82,11 +85,11 @@
 						<td class="text-nowrap">{{ $coin['denomination'] }}</td>
 						<td>{{ $coin['fineness'] }}</td>
 						<td>{{ $coin['coinage'] }}</td>
-						<td class="text-right text-nowrap">{{ number_format($coin['price'], 2, '.', ' ') }}</td>
+						<td class="text-right text-nowrap">{{ number_format($coin['price'], 0, '.', ' ') }}</td>
 						<td class="text-right text-nowrap">{{ number_format($coin['quantity'], 0, '.', ' ') }}</td>
-						<td class="text-right text-nowrap">{{ number_format(($coin['price'] * $coin['quantity']), 2, '.', ' ') }}</td>
+						<td class="text-right text-nowrap">{{ number_format($amount, 0, '.', ' ') }}</td>
 					</tr>
-					@php($sum += $coin['price'] * $coin['quantity'])
+					@php($sumAmount += $amount)
 				@endforeach
 			</tbody>
 			<tfoot>
@@ -98,23 +101,23 @@
 					<td></td>
 					<td></td>
 					<td></td>
-					<td class="text-right font-weight-bold">{{ number_format($sum, 2, '.', ' ') }}</td>
+					<td class="text-right font-weight-bold">{{ number_format($sumAmount, 0, '.', ' ') }}</td>
 				</tr>
 			</tfoot>
 		</table>
-		<div class="mb-3">Общая стоимость: {{ number_format($sum, 0, '.', ' ') }} руб. 00 коп. (<span id="sum-letter" data-sum="{{ $sum }}"></span>)</div>
+		<div class="mb-3">Общая стоимость: {{ number_format($sumAmount, 0, '.', ' ') }} руб. 00 коп. (<span id="sum-letter" data-sum="{{ $sumAmount }}"></span>)</div>
 		Место совершения сделки, передачи денежных средств и монет: 123317, г. Москва, Пресненская набережная, д. 12, 36 этаж, офис № 7.<br>
-		Основание для совершения сделки является согласие Сторон с правилами и условиями совершения сделок с монетами из драгоценных металлов опубликованными по адресу: <a href="https://www.zolotoy-zapas.ru/" target="_blank">https://www.zolotoy-zapas.ru/</a> и являющимися договором оферты.  Принимая условия настоящего акта, Стороны подтверждают свое согласие на совершение сделки купли/продажи монет и принимают обязательства оплаты монет в соответствии с данными, указанными в настоящем акте.<br>
+		Основание для совершения сделки является согласие Сторон с правилами и условиями совершения сделок с монетами из драгоценных металлов опубликованными по адресу: <a href="https://www.zolotoy-zapas.ru" target="_blank">https://www.zolotoy-zapas.ru</a> и являющимися договором оферты.  Принимая условия настоящего акта, Стороны подтверждают свое согласие на совершение сделки купли/продажи монет и принимают обязательства оплаты монет в соответствии с данными, указанными в настоящем акте.<br>
 		Стороны подтверждают, что монеты/денежные средства не находятся под залогом и/или иным обременением. Стороны заключают сделку в своих интересах, в соответствии с действующим законодательством РФ в целях тезаврации (приобретения сберегательных монет). Стороны подтверждают, что уплата налоговых требований является обязательством налогоплательщика, получающего доход и обязанностей налогового агента у второй стороны не возникает.
 		<hr>
 		<div class="mt-4" style="page-break-inside: avoid;">
 			<div class="row text-left">
 				<div class="col-6 pr-5">
 					<h5 class="mb-3">ПРОДАВЕЦ</h5>
-					@if($deal->deal_type == 'buy')
-						{!! $clientRequisites !!}
-					@else
+					@if($deal->deal_type == 'sell')
 						{!! $companyRequisites !!}
+					@else
+						{!! $clientRequisites !!}
 					@endif
 				</div>
 				<div class="col-6 pl-5">

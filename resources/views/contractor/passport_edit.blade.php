@@ -5,27 +5,27 @@
 		<div class="row justify-content-center">
 			<div class="col-md-12">
 				<div class="card">
-					<form id="contractor-form" method="POST" action="{{ route('contractor-save') }}" enctype="multipart/form-data">
+					<form id="passport-form" method="POST" action="{{ route('passport-save', ['id' => $contractor->id]) }}" enctype="multipart/form-data">
 						@csrf
 
 						<div class="card-header d-flex justify-content-between">
-							<span class="lead">{{ $contractor ? __('Контрагент #' . $contractor->id) : __('Новый контрагент') }}</span>
+							<span class="lead font-weight-bold">{{ $passport ? __('Паспорт ' . $passport->series . ' ' . $passport->number . ', ' . ($passport->issue_date ? $passport->issue_date->format('d.m.Y') : '')) : __('Новая версия паспорта') }} контрагента {{ $contractor->name }}</span>
 						</div>
 
 						<div class="card-body">
 							<div class="contractor-wrapper">
-								@include('contractor.data', [
-									'contractor' => $contractor,
+								@include('contractor.passport', [
+									'passport' => $passport,
 								])
 							</div>
 						</div>
 
 						<div class="card-footer d-flex justify-content-end">
-							<button type="submit" class="btn btn-success mr-1 js-submit-contractor">
+							<button type="submit" class="btn btn-success mr-1 js-submit-passport">
 								<i class="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;{{ __('Сохранить') }}
 							</button>
-							@if ($contractor)
-								<a href="javascript:void(0)" data-action-url="/contractor/{{ $contractor->id }}" class="btn btn-danger mr-1 js-delete-contractor" role="button">
+							@if ($passport)
+								<a href="javascript:void(0)" data-action-url="/contractor/{{ $contractor->id }}/passport/{{ $passport->id }}" class="btn btn-danger mr-1 js-delete-passport" role="button">
 									<i class="fa-regular fa-trash-can"></i>&nbsp;&nbsp;{{ __('Удалить') }}
 								</a>
 							@endif

@@ -5,7 +5,7 @@
 		<div class="row form-group">
 			<div class="col-md-2 col-form-label d-flex justify-content-start">
 				<div>
-					[<a href="javascript:void(0);" class="js-delete-coin" role="button" tabindex="-1"><i class="icon-remove" aria-hidden="true"></i></a>]
+					[ <a href="javascript:void(0);" class="js-delete-coin" role="button" tabindex="-1"><i class="fa-solid fa-xmark"></i></a> ]
 				</div>
 				<div style="margin-left: 10px;">
 					<span>{{ __('Монета #') }}</span><span class="coin-number">{{ ($index + 1) }}</span>
@@ -76,7 +76,7 @@
 
 		<div class="row">
 			<div class="col-md-12 text-center">
-				<a href="javascript:void(0)" class="js-extend-coin-link" role="button" tabindex="-1">{{--<span>Развернуть</span>&nbsp;&nbsp;--}}<i class="icon-angle-down" aria-hidden="true"></i></a>
+				<a href="javascript:void(0)" class="js-extend-coin-link" role="button" tabindex="-1">{{--<span>Развернуть</span>&nbsp;&nbsp;--}}<i class="fa-solid fa-angle-down"></i></a>
 			</div>
 		</div>
 

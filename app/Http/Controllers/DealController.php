@@ -5,15 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Contractor;
 use App\Models\Coin;
 use App\Models\Deal;
+use App\Models\LegalEntity;
+use App\Models\Passport;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class DealController extends Controller {
 	private $request;
@@ -33,8 +34,19 @@ class DealController extends Controller {
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
 	 */
 	public function getDeals() {
-		Log::debug($_SERVER['REMOTE_ADDR']);
-		return view('deal.index');
+		$filterContractor = $this->request->session()->get('deal-filter-contractor');
+		$filterPeriod = $this->request->session()->get('deal-filter-period');
+		$filterPeriodFrom = $this->request->session()->get('deal-filter-period-from');
+		$filterPeriodTo = $this->request->session()->get('deal-filter-period-to');
+		$filterDealType = $this->request->session()->get('deal-filter-deal-type');
+
+		return view('deal.index', [
+			'filterContractor' => $filterContractor,
+			'filterPeriod' => $filterPeriod,
+			'filterPeriodFrom' => $filterPeriodFrom,
+			'filterPeriodTo' => $filterPeriodTo,
+			'filterDealType' => $filterDealType,
+		]);
 	}
 	
 	/**
@@ -42,42 +54,85 @@ class DealController extends Controller {
 	 */
 	public function getList() {
 		if (!$this->request->ajax()) {
-			return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+			abort(404);
 		}
 		
-		$contractorName = $this->request->get('contractor') ?: '';
+		$id = $this->request->get('id') ?? 0;
+		$filterContractor = $this->request->get('filter-contractor') ?? '';
+		$filterPeriod = $this->request->get('filter-period') ?? '';
+		$filterPeriodFrom = $this->request->get('filter-period-from') ?? '';
+		$filterPeriodTo = $this->request->get('filter-period-to') ?? '';
+		$filterDealType = $this->request->get('filter-deal-type') ?? '';
 		
-		$contractorIds = [];
-		if ($contractorName) {
-			$contractorIds = Contractor::where('name', $contractorName)
-				->pluck('id')->all();
+		if ($this->request->exists('filter-contractor')) {
+			$this->request->session()->put('deal-filter-contractor', $filterContractor);
+		}
+		if ($this->request->exists('filter-period')) {
+			$this->request->session()->put('deal-filter-period', $filterPeriod);
+		}
+		if ($this->request->exists('filter-period-from')) {
+			$this->request->session()->put('deal-filter-period-from', $filterPeriodFrom);
+		}
+		if ($this->request->exists('filter-period-to')) {
+			$this->request->session()->put('deal-filter-period-to', $filterPeriodTo);
+		}
+		if ($this->request->exists('filter-deal-type')) {
+			$this->request->session()->put('deal-filter-deal-type', $filterDealType);
 		}
 		
-		if ($contractorIds) {
-			$deals = Deal::whereIn('contractor_id', $contractorIds)
-				->orderBy('id', 'desc')
-				->get();
-		} else {
-			$deals = Deal::orderBy('id', 'desc')
-				->take(10)
-				->get();
+		$filterContractor = $this->request->session()->get('deal-filter-contractor');
+		$filterPeriod = $this->request->session()->get('deal-filter-period');
+		$filterPeriodFrom = $this->request->session()->get('deal-filter-period-from');
+		$filterPeriodTo = $this->request->session()->get('deal-filter-period-to');
+		$filterDealType = $this->request->session()->get('deal-filter-deal-type');
+		
+		$deals = Deal::orderBy('id', 'desc');
+		if ($filterContractor) {
+			$deals = $deals->whereHas('contractor', function ($query) use ($filterContractor) {
+				$query->where('name', 'like', '%' . $filterContractor . '%');
+			});
 		}
-		$dealsData = [];
-		foreach ($deals as $deal) {
-			$dealSum = 0;
-			$dealData = $deal->data_json;
-			foreach ($dealData['coins'] ?: [] as $coin) {
-				$dealSum += $coin['quantity'] * $coin['price'];
+		if ($filterPeriod) {
+			switch ($filterPeriod) {
+				case 'day':
+					$deals = $deals->where('deal_date', '>=', Carbon::now()->subDay()->startOfDay()->format('Y-m-d H:i:s'));
+				break;
+				case 'week':
+					$deals = $deals->where('deal_date', '>=', Carbon::now()->subWeek()->startOfDay()->format('Y-m-d H:i:s'));
+				break;
+				case 'month':
+					$deals = $deals->where('deal_date', '>=', Carbon::now()->subMonth()->startOfDay()->format('Y-m-d H:i:s'));
+				break;
+				case 'month_3':
+					$deals = $deals->where('deal_date', '>=', Carbon::now()->subMonths(3)->startOfDay()->format('Y-m-d H:i:s'));
+				break;
+				case 'month_6':
+					$deals = $deals->where('deal_date', '>=', Carbon::now()->subMonths(6)->startOfDay()->format('Y-m-d H:i:s'));
+				break;
+				case 'year':
+					$deals = $deals->where('deal_date', '>=', Carbon::now()->subYear()->startOfDay()->format('Y-m-d H:i:s'));
+				break;
+				case 'other':
+					if ($filterPeriodFrom) {
+						$deals = $deals->where('deal_date', '>=', Carbon::parse($filterPeriodFrom)->startOfDay()->format('Y-m-d H:i:s'));
+					}
+					if ($filterPeriodTo) {
+						$deals = $deals->where('deal_date', '<=', Carbon::parse($filterPeriodTo)->endOfDay()->format('Y-m-d H:i:s'));
+					}
+				break;
 			}
-			$dealsData[$deal->id] = [
-				'contractor' => (is_array($deal->data_json) && array_key_exists('name', $deal->data_json['contractor'])) ? $deal->data_json['contractor']['name'] : '',
-				'deal_date' => $deal->deal_date->format('d.m.Y'),
-				'deal_type' => $deal->deal_type == 'buy' ? 'покупка' : 'продажа',
-				'deal_sum' => $dealSum,
-			];
 		}
+		if ($filterDealType) {
+			$deals = $deals->where('deal_type', $filterDealType);
+		}
+		if ($id) {
+			$deals = $deals->where('id', '<', $id);
+		}
+		$deals = $deals->limit(Deal::LIST_LIMIT)->get();
 		
-		$VIEW = view('deal.list', ['deals' => $dealsData]);
+		$VIEW = view('deal.list', [
+			'deals' => $deals,
+		]);
 		
 		return response()->json(['status' => 'success', 'html' => (string)$VIEW]);
 	}
@@ -88,9 +143,16 @@ class DealController extends Controller {
 	 */
 	public function edit($id = null) {
 		$deal = $id ? Deal::findOrFail($id) : [];
+		
+		$legalEntities = LegalEntity::orderBy('name')
+			->get();
 
-		return view('deal.edit')
-			->with('deal', $deal);
+		return view('deal.edit', [
+			'deal' => $deal,
+			'contractor' => $deal->contractor ?? null,
+			'passport' => $deal->passport ?? null,
+			'legalEntities' => $legalEntities,
+		]);
 	}
 
 	/**
@@ -98,7 +160,7 @@ class DealController extends Controller {
 	 */
     public function save() {
 		if (!$this->request->ajax()) {
-			return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+			abort(404);
 		}
 	
 		$rules = [
@@ -109,7 +171,11 @@ class DealController extends Controller {
 			'passport-number' => 'required|max:255',
 			'passport-date' => 'required|date|after:01.01.1900',
 			'passport-office' => 'required|max:255',
-			'passport-address' => 'required|max:255',
+			'passport-zipcode' => 'required|max:25',
+			'passport-region' => 'required|max:255',
+			'passport-city' => 'required|max:255',
+			'passport-street' => 'required|max:255',
+			'passport-house' => 'required|max:25',
 			'passport-file-1' => 'required_without:contractor-id|image|max:10240',
 			'passport-file-2' => 'required_without:contractor-id|image|max:10240',
 			'coin-name.*' => 'required|max:255',
@@ -128,25 +194,41 @@ class DealController extends Controller {
 			return response()->json(['status' => 'error', 'reason' => implode('<br>', $validator->errors()->all())]);
 		}
 	
-		$dealId = $this->request->post('deal-id') ?: '';
 		$contractorId = $this->request->post('contractor-id') ?: '';
 		if ($contractorId) {
 			$contractor = Contractor::find($contractorId);
 			if (!$contractor) {
-				return response()->json(['status' => 'error', 'reason' => 'Ошибка, контрагента #' . $contractorId . ' не существует']);
+				return response()->json(['status' => 'error', 'reason' => 'Контрагент не найден']);
 			}
-			$contractorData = $contractor->data_json;
 		}
 	
+		$passportId = $this->request->post('passport-id') ?: '';
+		if ($passportId) {
+			$passport = Passport::find($passportId);
+			if (!$passport) {
+				return response()->json(['status' => 'error', 'reason' => 'Паспортные данные не найдены']);
+			}
+		}
+		$passportData = $passport->data_json ?? [];
+	
+		$isNewPassportVersion = $this->request->post('is-new-passport-version') ?: 0;
+		if($isNewPassportVersion || !$passportId) {
+			$passport = new Passport();
+		}
+	
+		$dealId = $this->request->post('deal-id') ?: '';
 		if ($dealId) {
 			$deal = Deal::find($dealId);
 			if (!$deal) {
-				return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+				return response()->json(['status' => 'error', 'reason' => 'Сделка не найдена']);
 			}
-		}
-		else {
+		} else {
 			$deal = new Deal();
 		}
+
+		$contractorData = [
+			'name' => $this->request->post('contractor-name') ?? '',
+		];
 	
 		$coinIds = $this->request->post('coin-id') ?: [];
 		$coinNames = $this->request->post('coin-name') ?: [];
@@ -177,115 +259,102 @@ class DealController extends Controller {
 			];
 		}
 	
-		if ($this->request->post('contractor-name')) {
-			$contractorData['name'] = $this->request->post('contractor-name');
-		}
-		if ($this->request->post('passport-series')) {
-			$contractorData['passport_series'] = $this->request->post('passport-series');
-		}
-		if ($this->request->post('passport-number')) {
-			$contractorData['passport_number'] = $this->request->post('passport-number');
-		}
-		if ($this->request->post('passport-date')) {
-			$contractorData['passport_date'] = Carbon::parse($this->request->post('passport-date'))->timestamp;
-		}
-		if ($this->request->post('passport-office')) {
-			$contractorData['passport_office'] = $this->request->post('passport-office');
-		}
-		if ($this->request->post('passport-address')) {
-			$contractorData['passport_address'] = $this->request->post('passport-address');
-		}
-		if ($this->request->file('passport-file-1')) {
-			$passportFile1Name =  Str::uuid()->toString();
-			$passportFile1Ext =  $this->request->file('passport-file-1')->extension();
-			
-			if ($this->request->file('passport-file-1')->storeAs('passport', $passportFile1Name . '.' . $passportFile1Ext)) {
-				$contractorData['passport_file_1'] = [
-					'name' => $passportFile1Name,
-					'ext' => $passportFile1Ext,
-				];
-			}
-		} else {
-			$contractorData['passport_file_1'] = $deal->data_json['contractor']['passport_file_1'];
-		}
-		if ($this->request->file('passport-file-2')) {
-			$passportFile2Name =  Str::uuid()->toString();
-			$passportFile2Ext =  $this->request->file('passport-file-2')->extension();
-			
-			if ($this->request->file('passport-file-2')->storeAs('passport', $passportFile2Name . '.' . $passportFile2Ext)) {
-				$contractorData['passport_file_2'] = [
-					'name' => $passportFile2Name,
-					'ext' => $passportFile2Ext,
-				];
-			}
-		} else {
-			$contractorData['passport_file_2'] = $deal->data_json['contractor']['passport_file_2'];
-		}
+		try {
+			\DB::beginTransaction();
 		
-		if (!$contractorId) {
-			$contractor = new Contractor();
-			$contractor->name = $this->request->post('contractor-name');
-			$contractor->data_json = $contractorData;
-			$contractor->created_by = Auth::id();
-			$contractor->updated_by = Auth::id();
-			if (!$contractor->save()) {
-				return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+			if (!$contractorId) {
+				$contractor = new Contractor();
+				$contractor->name = $this->request->post('contractor-name') ?? '';
+				$contractor->created_by = Auth::id();
+				$contractor->updated_by = Auth::id();
+				$contractor->save();
 			}
-		}
-	
-		foreach ($coinsData as $index => $coinData) {
-			if (!$coinData['id']) {
-				unset($coinData['id']);
-				
-				$coin = new Coin();
-				$coin->name = $coinData['name'];
-				$coin->data_json = [
-					'country' => $coinData['country'],
-					'year' => $coinData['year'],
-					'metal' => $coinData['metal'],
-					'metalWeight' => $coinData['metalWeight'],
-					'denomination' => $coinData['denomination'],
-					'fineness' => $coinData['fineness'],
-					'coinage' => $coinData['coinage'],
-				];
-				$coin->created_by = Auth::id();
-				$coin->updated_by = Auth::id();
-				if (!$coin->save()) {
-					return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+			
+			$passport->contractor_id = $contractor->id;
+			$passport->number = $this->request->post('passport-number') ?? null;
+			$passport->series = $this->request->post('passport-series') ?? null;
+			$passport->issue_date = $this->request->post('passport-date') ? Carbon::parse($this->request->post('passport-date')) : null;
+			$passport->issue_office = $this->request->post('passport-office') ?? null;
+			$passport->zipcode = $this->request->post('passport-zipcode') ?? 0;
+			$passport->region = $this->request->post('passport-region') ?? null;
+			$passport->city = $this->request->post('passport-city') ?? null;
+			$passport->street = $this->request->post('passport-street') ?? null;
+			$passport->house = $this->request->post('passport-house') ?? null;
+			$passport->apartment = $this->request->post('passport-apartment') ?? null;
+			if ($this->request->file('passport-file-1')) {
+				$passportFile1Name =  Str::uuid()->toString();
+				$passportFile1Ext =  $this->request->file('passport-file-1')->extension();
+				if ($this->request->file('passport-file-1')->storeAs('passport', $passportFile1Name . '.' . $passportFile1Ext)) {
+					$passportData['passport_file_1'] = [
+						'name' => $passportFile1Name,
+						'ext' => $passportFile1Ext,
+					];
 				}
-				$coinsData[$index]['id'] = $coin->id;
 			}
-		}
-	
-		$fileData = (is_array($deal->data_json) && array_key_exists('files', $deal->data_json)) ? $deal->data_json['files'] : [];
-		if ($this->request->file('file')) {
-			$fileName =  Str::uuid()->toString();
-			$fileExt =  $this->request->file('file')->extension();
+			if ($this->request->file('passport-file-2')) {
+				$passportFile2Name =  Str::uuid()->toString();
+				$passportFile2Ext =  $this->request->file('passport-file-2')->extension();
+				if ($this->request->file('passport-file-2')->storeAs('passport', $passportFile2Name . '.' . $passportFile2Ext)) {
+					$passportData['passport_file_2'] = [
+						'name' => $passportFile2Name,
+						'ext' => $passportFile2Ext,
+					];
+				}
+			}
+			$passport->data_json = $passportData;
+			if ($isNewPassportVersion || !$passportId) {
+				$passport->created_by = Auth::id();
+			}
+			$passport->updated_by = Auth::id();
+			$passport->save();
+			
+			foreach ($coinsData as $index => $coinData) {
+				if (!$coinData['id']) {
+					unset($coinData['id']);
+					
+					$coin = new Coin();
+					$coin->name = $coinData['name'];
+					$coin->data_json = [
+						'country' => $coinData['country'],
+						'year' => $coinData['year'],
+						'metal' => $coinData['metal'],
+						'metalWeight' => $coinData['metalWeight'],
+						'denomination' => $coinData['denomination'],
+						'fineness' => $coinData['fineness'],
+						'coinage' => $coinData['coinage'],
+					];
+					$coin->created_by = Auth::id();
+					$coin->updated_by = Auth::id();
+					$coin->save();
+
+					$coinsData[$index]['id'] = $coin->id;
+				}
+			}
 		
-			if ($this->request->file('file')->storeAs('file', $fileName . '.' . $fileExt)) {
-				$fileData[] = [
-					'name' => $fileName,
-					'ext' => $fileExt,
-				];
+			$deal->contractor_id = $contractor->id;
+			$deal->passport_id = $passport->id;
+			$deal->data_json = [
+				'contractor' => $contractorData,
+				'coins' => $coinsData,
+			];
+			$deal->deal_date = $this->request->post('deal-date');
+			$deal->deal_type = $this->request->post('deal-type');
+			$deal->legal_entity_id = $this->request->post('deal-legal-entity-id');
+			if (!$dealId) {
+				$deal->created_by = Auth::id();
 			}
-		}
-	
-		$deal->contractor_id = $contractor->id;
-		$deal->data_json = [
-			'contractor' => $contractorData,
-			'coins' => $coinsData,
-			'files' => $fileData,
-		];
-		$deal->deal_date = $this->request->post('deal-date');
-		$deal->deal_type = $this->request->post('deal-type');
-		if (!$dealId) {
-			$deal->created_by = Auth::id();
-		}
-		$deal->updated_by = Auth::id();
-		if (!$deal->save()) {
+			$deal->updated_by = Auth::id();
+			$deal->save();
+			
+			\DB::commit();
+		} catch (Throwable $e) {
+			\DB::rollback();
+			
+			Log::debug('500 - Deal Save: ' . $e->getMessage());
+			
 			return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
 		}
-		
+	
 		return response()->json(['status' => 'success', 'deal_id' => $deal->id]);
 	}
 	
@@ -295,12 +364,12 @@ class DealController extends Controller {
 	 */
 	public function delete($id) {
 		if (!$this->request->ajax()) {
-			return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+			abort(404);
 		}
   
 		$deal = Deal::find($id);
 		if (!$deal) {
-			return response()->json(['status' => 'error', 'reason' => 'Ошибка, попробуйте повторить операцию позже']);
+			return response()->json(['status' => 'error', 'reason' => 'Сделка не найдена']);
 		}
 		
 		if (!$deal->delete()) {
@@ -313,8 +382,9 @@ class DealController extends Controller {
 	public function printSpecification($id) {
 		$deal = $id ? Deal::findOrFail($id) : [];
 		
-		return view('deal.specification')
-			->with('deal', $deal);
+		return view('deal.specification', [
+			'deal' => $deal,
+		]);
 	}
 	
 	/*public function deleteFile($id, $name, $ext) {
@@ -365,5 +435,4 @@ class DealController extends Controller {
 			'Expires' => '0',
 		], null);
 	}*/
-	
 }

@@ -15,6 +15,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|Coin newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Coin newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Coin query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Coin whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Coin whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Coin whereDataJson($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Coin whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Coin whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Coin whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Coin whereUpdatedBy($value)
  */
 
 class Coin extends Model {
@@ -34,7 +44,9 @@ class Coin extends Model {
 		'created_at',
 		'updated_at',
 	];
-
+	
+	CONST LIST_LIMIT = 20;
+	
     /**
      * The attributes that should be cast to native types.
      *

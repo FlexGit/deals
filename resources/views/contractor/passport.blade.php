@@ -1,22 +1,5 @@
-<input type="hidden" id="contractor-id" name="contractor-id" value="{{ $deal ? $deal->contractor_id : '' }}">
-
-<div class="form-group row">
-	<div class="col-md-6">
-		<label class="font-weight-bold">ФИО</label>
-		<input id="contractor-name" type="text" class="form-control" name="contractor-name" value="{{ ($deal && isset($deal->data_json['contractor']['name'])) ? $deal->data_json['contractor']['name'] : '' }}" data-source-url="{{ route('contractor-search') }}" placeholder="ФИО" required>
-	</div>
-	<div class="col-md-6">
-		<label for="passport-id" class="font-weight-bold">Версия паспортных данных</label>
-		<select id="passport-id" name="passport-id" class="form-control">
-			<option></option>
-			@if($contractor)
-				@foreach($contractor->passports as $passportItem)
-					<option value="{{ $passportItem->id }}" @if($passport && $passportItem->id == $passport->id) selected @endif>{{ $passportItem->series }} {{ $passportItem->number }} от {{ $passportItem->issue_date ? $passportItem->issue_date->format('d.m.Y') : '-' }} [создал {{ $passportItem->createdBy->name }} {{ $passportItem->created_at->format('Y-m-d H:i:s') }}@if($passportItem->created_at != $passportItem->updated_at), изменил {{ $passportItem->updatedBy->name }} {{ $passportItem->updated_at->format('Y-m-d H:i:s') }}@endif]</option>
-				@endforeach
-			@endif
-		</select>
-	</div>
-</div>
+<input type="hidden" id="contractor-id" name="contractor-id" value="{{ $passport ? $passport->contractor_id : '' }}">
+<input type="hidden" id="passport-id" name="passport-id" value="{{ $passport ? $passport->id : '' }}">
 
 <div class="form-group row">
 	<div class="col-md-2">
@@ -31,7 +14,7 @@
 
 	<div class="col-md-2">
 		<label class="font-weight-bold">Дата выдачи</label>
-		<input id="passport-date" type="date" class="form-control datepicker" name="passport-date" value="{{ $passport ? $passport->issue_date->format('Y-m-d') : '' }}" placeholder="Дата выдачи" required>
+		<input id="passport-date" type="date" class="form-control datepicker" name="passport-date" value="{{ ($passport && $passport->issue_date) ? $passport->issue_date->format('Y-m-d') : '' }}" placeholder="Дата выдачи" required>
 	</div>
 
 	<div class="col-md-6">
@@ -75,7 +58,7 @@
 </div>
 
 <div class="form-group row">
-	<div class="passport-container col-md-6">
+	<div class="col-md-6">
 		<label class="font-weight-bold">Первая страница паспорта</label>
 		<div class="custom-file">
 			<input type="file" class="custom-file-input" id="passport-file-1" name="passport-file-1" accept="image/*">
@@ -94,7 +77,7 @@
 		</div>
 	</div>
 
-	<div class="passport-container col-md-6">
+	<div class="col-md-6">
 		<label class="font-weight-bold">Вторая страница паспорта</label>
 		<div class="custom-file">
 			<input type="file" class="custom-file-input" id="passport-file-2" name="passport-file-2" accept="image/*">
@@ -110,22 +93,6 @@
 			@if ($passport && isset($passport->data_json['passport_file_2']))
 				<a href="javascript:void(0)" class="js-get-passport" data-path="/contractor/{{ $passport->contractor_id }}/passport/{{ $passport->data_json['passport_file_2']['ext'] }}/{{ $passport->data_json['passport_file_2']['name'] }}">Открыть файл</a>
 			@endif
-		</div>
-	</div>
-</div>
-
-<div class="form-group row">
-	<div class="col-md-12 vertical-align-middle">
-		<label for="is-new-passport-version" class="font-weight-bold">В каком виде сохранить паспортные данные?</label>
-		<div>
-			<div class="custom-control custom-radio custom-control-inline" style="margin-top: 0.5rem;">
-				<input type="radio" class="custom-control-input" id="current-passport-version" name="is-new-passport-version" value="0" checked>
-				<label class="custom-control-label" for="current-passport-version">В текущую версию</label>
-			</div>
-			<div class="custom-control custom-radio custom-control-inline" style="margin-top: 0.5rem;">
-				<input type="radio" class="custom-control-input" id="new-passport-version" name="is-new-passport-version" value="1">
-				<label class="custom-control-label" for="new-passport-version">Создать новую версию</label>
-			</div>
 		</div>
 	</div>
 </div>
