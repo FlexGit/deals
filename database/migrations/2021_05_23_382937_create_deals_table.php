@@ -15,6 +15,7 @@ class CreateDealsTable extends Migration {
             $table->id();
             $table->integer('contractor_id')->default(0)->index();
 			$table->integer('passport_id')->default(0)->index();
+			$table->integer('legal_entity_id')->default(0)->index();
 			$table->text('data_json')->nullable();
 			$table->timestamp('deal_date')->useCurrent();
 			$table->enum('deal_type', ['buy', 'sell'])->nullable()->index();

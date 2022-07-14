@@ -76,7 +76,7 @@
 
 		<div class="row">
 			<div class="col-md-12 text-center">
-				<a href="javascript:void(0)" class="js-extend-coin-link" role="button" tabindex="-1">{{--<span>Развернуть</span>&nbsp;&nbsp;--}}<i class="fa-solid fa-angle-down"></i></a>
+				<a href="javascript:void(0)" class="js-extend-coin-link" role="button" tabindex="-1"><i class="fa-solid fa-angle-down"></i></a>
 			</div>
 		</div>
 

@@ -345,18 +345,15 @@ $(document).ready(function() {
 
 	$(document).on('click', '.js-extend-coin-link', function() {
 		var $icon = $(this).find('i'),
-			$span = $(this).find('span'),
 			$coinContainer = $(this).closest('.coin-container');
 
-		if($icon.hasClass('icon-angle-down')) {
-			$icon.removeClass('icon-angle-down').addClass('icon-angle-up');
-			$span.text('Свернуть');
+		if($icon.hasClass('fa-angle-down')) {
+			$icon.removeClass('fa-angle-down').addClass('fa-angle-up');
 			$coinContainer.find('.js-extend-coin').each(function() {
 				$(this).removeClass('d-none');
 			});
 		} else {
-			$icon.removeClass('icon-angle-up').addClass('icon-angle-down');
-			$span.text('Развернуть');
+			$icon.removeClass('fa-angle-up').addClass('fa-angle-down');
 			$coinContainer.find('.js-extend-coin').each(function() {
 				$(this).addClass('d-none');
 			});
