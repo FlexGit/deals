@@ -57,4 +57,14 @@ class Coin extends Model {
 		'updated_at' => 'datetime:Y-m-d H:i:s',
 		'data_json' => 'array',
     ];
+	
+	public function createdBy()
+	{
+		return $this->hasOne(User::class, 'id', 'created_by');
+	}
+	
+	public function updatedBy()
+	{
+		return $this->hasOne(User::class, 'id', 'updated_by');
+	}
 }
