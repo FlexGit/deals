@@ -37,7 +37,7 @@
 			@endforeach
 		@else
 			<tr>
-				<td colspan="3" class="text-center" scope="row">Ничего не найдено</td>
+				<td colspan="20" class="text-center" scope="row">Ничего не найдено</td>
 			</tr>
 		@endif
 	</tbody>
